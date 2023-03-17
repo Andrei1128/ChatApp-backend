@@ -13,7 +13,7 @@ const guard = async (req, res, next) => {
         await tokenModel.findByIdAndRemove(tokenFound._id);
         return res.status(400).send("Session expired!");
       }
-      req.user = decoded.user;
+      req.profileId = decoded.profile;
       next();
     } else return res.status(400).send("Invalid token!");
   } else return res.status(400).send("Token is missing!");
