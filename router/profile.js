@@ -7,6 +7,7 @@ const {
   getMe,
   get,
   getAll,
+  getPeople,
 } = require("../controller/profile");
 
 router.post("/:id", add);
@@ -15,5 +16,6 @@ router.delete("/:id", decline);
 router.get("/me", getMe);
 router.get("/:id", get);
 router.get("/", getAll);
+router.post("/", getPeople);
 
 module.exports = router;

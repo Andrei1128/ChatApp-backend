@@ -28,7 +28,12 @@ const decline = async (req, res) => {
   res.status(200).send("Friend request declined!");
 };
 const getMe = async (req, res) => {
-  res.json(await profileModel.findById(req.profileId));
+  res.json(
+    await profileModel
+      .findById(req.profileId)
+      .populate("friends")
+      .populate("requests")
+  );
 };
 const get = async (req, res) => {
   try {
@@ -44,5 +49,11 @@ const getAll = async (req, res) => {
     .populate("friends");
   res.json(myProfile.friends);
 };
+const getPeople = async (req, res) => {
+  const peoples = await profileModel.find({
+    nickname: { $regex: req.body.nickname, $options: "i" },
+  });
+  res.json(peoples);
+};
 
-module.exports = { add, accept, decline, get, getMe, getAll };
+module.exports = { add, accept, decline, get, getMe, getAll, getPeople };
