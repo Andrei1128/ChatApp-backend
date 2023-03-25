@@ -31,7 +31,7 @@ const getMe = async (req, res) => {
   res.json(
     await profileModel
       .findById(req.profileId)
-      .populate("friends")
+      .populate("chats")
       .populate("requests")
   );
 };
@@ -46,7 +46,7 @@ const get = async (req, res) => {
 const getAll = async (req, res) => {
   const myProfile = await profileModel
     .findById(req.profileId)
-    .populate("friends");
+    .populate("chats");
   res.json(myProfile.friends);
 };
 const getPeople = async (req, res) => {

@@ -10,30 +10,29 @@ app.use(require("cors")());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use("/auth", require("./router/user"));
-app.use("/profile", require("./middleware/guard"), require("./router/profile"));
-
 io.use((socket, next) => {
   const nickname = socket.handshake.auth.nickname;
   if (!nickname) {
-    console.log("invalid nickname!");
-    return next(new Error("Invalid nickname!"));
+    return next(new Error("Missing nickname!"));
   }
-  socket.nickname = nickname;
+  socket.id = nickname;
   next();
-});
-io.on("connection", (socket) => {
-  console.log(`${socket.nickname} connected..`);
 });
 
 io.on("connection", (socket) => {
-  socket.on("chat", ({ content, to }) => {
-    console.log(content, to);
-    socket
-      .to(to)
-      .to(socket.nickname)
-      .emit("chat", { content, from: socket.nickname, to });
+  console.log(`${socket.id} connected..`);
+  socket.on("disconnect", () => {
+    console.log(`${socket.id} disconnected!`);
   });
 });
+
+io.on("connection", (socket) => {
+  socket.on("private message", ({ message, to }) => {
+    socket.to(to).emit("private message", message);
+  });
+});
+
+app.use("/auth", require("./router/user"));
+app.use("/profile", require("./middleware/guard"), require("./router/profile"));
 
 httpServer.listen(PORT, console.log(`Listening on PORT ${PORT}...`));

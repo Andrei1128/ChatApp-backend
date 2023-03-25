@@ -1,6 +1,7 @@
 const userModel = require("../model/user");
 const tokenModel = require("../model/token");
 const profileModel = require("../model/profile");
+const chatModel = require("../model/chat");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -27,8 +28,10 @@ const register = async (req, res) => {
   if (!(await userModel.findOne({ email: req.body.email }))) {
     const salt = bcrypt.genSaltSync(parseInt(process.env.SALT_ROUND));
     const hash = bcrypt.hashSync(req.body.password, salt);
+    const newChats = await chatModel.create();
     const newProfile = await profileModel.create({
       nickname: req.body.nickname,
+      chats: newChats,
     });
     const newUser = await userModel.create({
       ...req.body,
