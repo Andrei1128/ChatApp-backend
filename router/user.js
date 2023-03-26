@@ -4,6 +4,6 @@ const { login, register, logout } = require("../controller/user");
 
 router.post("/login", login);
 router.post("/register", register);
-router.delete("/", logout);
+router.delete("/logout", logout);
 
 module.exports = router;

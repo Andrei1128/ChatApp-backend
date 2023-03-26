@@ -1,7 +1,6 @@
 const userModel = require("../model/user");
 const tokenModel = require("../model/token");
 const profileModel = require("../model/profile");
-const chatModel = require("../model/chat");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -20,18 +19,16 @@ const login = async (req, res) => {
       );
       await tokenModel.create({ content: token });
       res.json(token);
-    } else return res.status(400).send("Incorrect password!");
-  } else return res.status(400).send("Account not found!");
+    } else return res.sendStatus(400);
+  } else return res.sendStatus(400);
 };
 
 const register = async (req, res) => {
   if (!(await userModel.findOne({ email: req.body.email }))) {
     const salt = bcrypt.genSaltSync(parseInt(process.env.SALT_ROUND));
     const hash = bcrypt.hashSync(req.body.password, salt);
-    const newChats = await chatModel.create();
     const newProfile = await profileModel.create({
       nickname: req.body.nickname,
-      chats: newChats,
     });
     const newUser = await userModel.create({
       ...req.body,
@@ -47,7 +44,7 @@ const register = async (req, res) => {
     );
     await tokenModel.create({ content: token });
     res.json(token);
-  } else return res.status(400).send("Email used!");
+  } else return res.sendStatus(400);
 };
 
 const logout = async (req, res) => {
@@ -55,8 +52,8 @@ const logout = async (req, res) => {
   const token = headerAuth && headerAuth.split(" ")[1];
   if (token) {
     await tokenModel.findOneAndRemove({ content: token });
-    res.status(200).send("Disconnected successfully!");
-  } else return res.status(400).send("Token is missing!");
+    res.sendStatus(200);
+  } else return res.sendStatus(400);
 };
 
 module.exports = {

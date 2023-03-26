@@ -1,7 +1,7 @@
 const tokenModel = require("../model/token");
 const jwt = require("jsonwebtoken");
 
-const guard = async (req, res, next) => {
+const authGuard = async (req, res, next) => {
   const headerAuth = req.headers["authorization"];
   const token = headerAuth && headerAuth.split(" ")[1];
   if (token) {
@@ -11,12 +11,12 @@ const guard = async (req, res, next) => {
         decoded = jwt.verify(tokenFound.content, process.env.JWT_SECRET);
       } catch (e) {
         await tokenModel.findByIdAndRemove(tokenFound._id);
-        return res.status(400).send("Session expired!");
+        return res.sendStatus(400);
       }
       req.profileId = decoded.profile;
       next();
-    } else return res.status(400).send("Invalid token!");
-  } else return res.status(400).send("Token is missing!");
+    } else return res.sendStatus(400);
+  } else return res.sendStatus(400);
 };
 
-module.exports = guard;
+module.exports = authGuard;
