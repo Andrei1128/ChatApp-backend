@@ -1,6 +1,6 @@
 const io = require("../index");
-const profileModel = require("../model/profile");
 const chatModel = require("../model/chat");
+const messageModel = require("../model/message");
 
 io.use(require("../middleware/socketGuard"));
 
@@ -12,12 +12,17 @@ io.on("connection", (socket) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("private message", async ({ message, to }) => {
-    socket.to(to).emit("private message", message);
-    const profile = await profileModel.findOne({ nickname: to });
-    const chat = await chatModel.findOne({ friend: profile._id });
-    chat.messages.push(message);
-    console.log(chat.messages);
-    await chat.save();
+  socket.on("private message", async ({ message, from, id }) => {
+    const newMessage = await messageModel.create({
+      content: message,
+      from: from,
+    });
+    const foundMessage = await messageModel
+      .findById(newMessage._id)
+      .populate("from");
+    io.emit(id, foundMessage);
+    const conv = await chatModel.findById(id);
+    conv.messages.push(newMessage);
+    await conv.save();
   });
 });

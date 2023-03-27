@@ -1,22 +1,29 @@
 const profileModel = require("../model/profile");
 const chatModel = require("../model/chat");
+const findChat = async (req, res) => {
+  const chatFound = await chatModel
+    .findById(req.params.id)
+    .populate("messages")
+    .populate({ path: "messages", populate: { path: "from" } });
+  res.json(chatFound.messages);
+};
 
 const createChat = async (req, res) => {
   try {
-    const profileFound = await profileModel.findById(req.body.id);
-    const myProfile = await profileModel.findById(req.profileId);
-    const newChat = await chatModel.create({
-      participants: [profileFound, myProfile],
+    const participants = await profileModel.find({
+      _id: { $in: req.body.participants },
     });
-    profileFound.chats.push(newChat);
-    myProfile.chats.push(newChat);
-    await profileFound.save();
-    await myProfile.save();
+    const newChat = await chatModel.create({ participants });
+    for (let participant of participants) {
+      participant.chats.push(newChat);
+      participant.save();
+    }
     res.json(newChat);
   } catch (e) {
     res.sendStatus(400);
   }
 };
+
 const addFriend = async (req, res) => {
   try {
     const profileFound = await profileModel.findById(req.body.id);
@@ -73,6 +80,15 @@ const getMyProfile = async (req, res) => {
         populate: {
           path: "participants",
         },
+      })
+      .populate({
+        path: "chats",
+        populate: {
+          path: "messages",
+          populate: {
+            path: "from",
+          },
+        },
       });
     res.json(myProfile);
   } catch (e) {
@@ -109,6 +125,7 @@ const getPeople = async (req, res) => {
 };
 
 module.exports = {
+  findChat,
   createChat,
   addFriend,
   acceptFriend,

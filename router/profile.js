@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const {
+  findChat,
   createChat,
   addFriend,
   acceptFriend,
@@ -12,6 +13,7 @@ const {
   getPeople,
 } = require("../controller/profile");
 
+router.get("/findChat/:id", findChat);
 router.post("/createChat", createChat);
 router.patch("/add", addFriend);
 router.patch("/accept", acceptFriend);
