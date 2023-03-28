@@ -11,7 +11,7 @@ const {
   getFriendProfile,
   getAllFriendProfiles,
   getPeople,
-} = require("../controller/profile");
+} = require("../controllers/profile");
 
 router.get("/findChat/:id", findChat);
 router.post("/createChat", createChat);

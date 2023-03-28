@@ -10,12 +10,12 @@ app.use(require("cors")());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-require("./controller/socket");
-app.use("/auth", require("./router/user"));
+require("./src/controllers/socket");
+app.use("/auth", require("./src/routers/user"));
 app.use(
   "/profile",
-  require("./middleware/authGuard"),
-  require("./router/profile")
+  require("./src//middlewares/authGuard"),
+  require("./src/routers/profile")
 );
 
 httpServer.listen(PORT, () => {

@@ -1,4 +1,4 @@
-const tokenModel = require("../model/token");
+const tokenModel = require("../models/token");
 const jwt = require("jsonwebtoken");
 
 const authGuard = async (req, res, next) => {
