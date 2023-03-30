@@ -1,9 +1,11 @@
-import { Message } from "../interfaces/message";
 import messageModel from "../models/message";
+import { Types } from "mongoose";
 
-async function createMessage(msg: Message) {
-  const newMessage = await messageModel.create(msg);
-  return newMessage._id;
+class MessageController {
+  async createMessage(content: string, from: Types.ObjectId): Promise<any> {
+    const newMessage = await messageModel.create({ content, from });
+    return newMessage._id;
+  }
 }
 
-export { createMessage };
+export default new MessageController();

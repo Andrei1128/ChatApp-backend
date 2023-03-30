@@ -1,17 +1,22 @@
-import mongoose from 'mongoose'
-mongoose.connect(process.env.MONGO_URL as string)
+import { Schema, model, Document, Types } from "mongoose";
 
-const user = mongoose.model(
-  'user',
-  new mongoose.Schema({
+export interface User extends Document {
+  email: string;
+  password: string;
+  profile: Types.ObjectId;
+}
+
+const userModel = model<User>(
+  "user",
+  new Schema<User>({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     profile: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'profile',
+      type: Schema.Types.ObjectId,
+      ref: "profile",
       required: true,
-      unique: true
-    }
+      unique: true,
+    },
   })
-)
-export default user
+);
+export default userModel;

@@ -1,15 +1,19 @@
-import mongoose from 'mongoose'
-mongoose.connect(process.env.MONGO_URL as string)
+import { Types, Document, Schema, model } from "mongoose";
 
-const message = mongoose.model(
-  'message',
-  new mongoose.Schema({
+export interface Message extends Document {
+  content: string;
+  from: Types.ObjectId;
+}
+
+const message = model<Message>(
+  "message",
+  new Schema<Message>({
     content: { type: String },
     from: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'profile',
-      required: true
-    }
+      type: Schema.Types.ObjectId,
+      ref: "profile",
+      required: true,
+    },
   })
-)
-export default message
+);
+export default message;

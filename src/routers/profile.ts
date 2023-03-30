@@ -1,28 +1,17 @@
-import express from 'express'
+import { Router } from "express";
+import ProfileController from "../controllers/profile";
 
-import {
-  findChat,
-  createChat,
-  addFriend,
-  acceptFriend,
-  declineFriend,
-  removeFriend,
-  getMyProfile,
-  getFriendProfile,
-  getAllFriendProfiles,
-  getPeople
-} from '../controllers/profile'
-const router = express.Router()
+const router = Router();
 
-router.get('/findChat/:id', findChat)
-router.post('/createChat', createChat)
-router.patch('/add', addFriend)
-router.patch('/accept', acceptFriend)
-router.patch('/decline', declineFriend)
-router.patch('/remove', removeFriend)
-router.get('/myProfile', getMyProfile)
-router.get('/friends/:id', getFriendProfile)
-router.get('/friends', getAllFriendProfiles)
-router.get('/peoples/:nickname', getPeople)
+router.get("/findChat/:id", ProfileController.findChat);
+router.post("/createChat", ProfileController.createChat);
+router.patch("/add", ProfileController.addFriend);
+router.patch("/accept", ProfileController.acceptFriend);
+router.patch("/decline", ProfileController.declineFriend);
+router.patch("/remove", ProfileController.removeFriend);
+router.get("/myProfile", ProfileController.getMyProfile);
+router.get("/friends/:id", ProfileController.getFriendProfile);
+router.get("/friends", ProfileController.getAllFriendProfiles);
+router.get("/peoples/:name", ProfileController.getPeople);
 
-export default router
+export default router;

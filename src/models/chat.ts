@@ -1,17 +1,21 @@
-import mongoose from 'mongoose'
-mongoose.connect(process.env.MONGO_URL as string)
+import { Types, model, Schema, Document } from "mongoose";
 
-const chat = mongoose.model(
-  'chat',
-  new mongoose.Schema({
+export interface Chat extends Document {
+  participants: Types.ObjectId[];
+  messages: Types.ObjectId[];
+}
+
+const chatModel = model<Chat>(
+  "chat",
+  new Schema<Chat>({
     participants: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile',
-        required: true
-      }
+        type: Schema.Types.ObjectId,
+        ref: "Profile",
+        required: true,
+      },
     ],
-    messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }]
+    messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
   })
-)
-export default chat
+);
+export default chatModel;

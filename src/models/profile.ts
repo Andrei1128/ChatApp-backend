@@ -1,13 +1,19 @@
-import mongoose from 'mongoose'
-mongoose.connect(process.env.MONGO_URL as string)
+import { Types, Document, Schema, model } from "mongoose";
 
-const profile = mongoose.model(
-  'profile',
-  new mongoose.Schema({
-    nickname: { type: String, required: true, unique: true },
-    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'profile' }],
-    chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'chat' }],
-    requests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'profile' }]
+export interface Profile extends Document {
+  name: string;
+  friends: Types.ObjectId[];
+  chats: Types.ObjectId[];
+  requests: Types.ObjectId[];
+}
+
+const profile = model<Profile>(
+  "profile",
+  new Schema<Profile>({
+    name: { type: String, required: true, unique: true },
+    friends: [{ type: Schema.Types.ObjectId, ref: "profile" }],
+    chats: [{ type: Schema.Types.ObjectId, ref: "chat" }],
+    requests: [{ type: Schema.Types.ObjectId, ref: "profile" }],
   })
-)
-export default profile
+);
+export default profile;

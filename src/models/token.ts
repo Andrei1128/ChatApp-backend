@@ -1,11 +1,14 @@
-import mongoose from 'mongoose'
-mongoose.connect(process.env.MONGO_URL as string)
+import { Document, Schema, model } from "mongoose";
 
-const token = mongoose.model(
-  'token',
-  new mongoose.Schema({
-    content: { type: String, required: true, unique: true }
+export interface Token extends Document {
+  content: string;
+}
+
+const token = model<Token>(
+  "token",
+  new Schema<Token>({
+    content: { type: String, required: true, unique: true },
   })
-)
+);
 
-export default token
+export default token;

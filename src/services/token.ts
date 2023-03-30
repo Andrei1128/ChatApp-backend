@@ -1,12 +1,14 @@
 import tokenModel from "../models/token";
 
-async function createToken(token: string) {
-  await tokenModel.create({ content: token });
+class TokenService {
+  async createToken(token: string): Promise<any> {
+    await tokenModel.create({ content: token });
+  }
+  async deleteToken(token: string): Promise<any> {
+    await tokenModel.findOneAndDelete({ content: token });
+  }
+  async findToken(token: string): Promise<any> {
+    return await tokenModel.findOne({ content: token });
+  }
 }
-async function deleteToken(token: string) {
-  await tokenModel.findOneAndDelete({ content: token });
-}
-async function findToken(token: string) {
-  return await tokenModel.findOne({ content: token });
-}
-export { createToken, deleteToken, findToken };
+export default new TokenService();
