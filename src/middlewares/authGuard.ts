@@ -1,26 +1,27 @@
 import jwt from "jsonwebtoken";
 import TokenService from "../services/token";
 import { Request, Response, NextFunction } from "express";
+import { Types } from "mongoose";
 
 const authGuard = async (req: Request, res: Response, next: NextFunction) => {
   const headerAuth = req.headers.authorization;
   const token = headerAuth && headerAuth.split(" ")[1];
   if (token) {
     const tokenFound = await TokenService.findToken(token);
-    if (tokenFound != null) {
+    if (tokenFound) {
       try {
         const decoded = jwt.verify(
           tokenFound.content,
           process.env.JWT_SECRET as string
         ) as jwt.JwtPayload;
-        req.headers.myProfileId = decoded.profileId;
+        req.myProfileID = new Types.ObjectId(decoded.myProfileID);
         next();
       } catch (e) {
-        await TokenService.deleteToken(tokenFound.content);
-        return res.sendStatus(400);
+        await TokenService.deleteToken(tokenFound._id);
+        res.sendStatus(401);
       }
-    } else return res.sendStatus(400);
-  } else return res.sendStatus(400);
+    } else res.sendStatus(401);
+  } else res.sendStatus(401);
 };
 
 export default authGuard;

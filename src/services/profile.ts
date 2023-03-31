@@ -1,12 +1,61 @@
 import { Types } from "mongoose";
-import profileModel from "../models/profile";
+import profileModel, { Profile } from "../models/profile";
 
 class ProfileService {
-  async findProfilesAndAddChat(participants: string[], chatId: Types.ObjectId) {
+  async addChat(participants: string[], chatId: Types.ObjectId): Promise<void> {
     await profileModel.updateMany(
       { _id: { $in: participants } },
       { $push: { chats: chatId } }
     );
+  }
+
+  async addRequest(id: Types.ObjectId, myId: Types.ObjectId): Promise<void> {
+    await profileModel.findByIdAndUpdate(id, { $push: { requests: myId } });
+  }
+
+  async addFriendAndRemoveRequest(
+    id: Types.ObjectId,
+    friendId: Types.ObjectId
+  ): Promise<void> {
+    await profileModel.findByIdAndUpdate(id, {
+      $push: { friends: friendId },
+      $pull: { requests: friendId },
+    });
+  }
+
+  async addFriend(
+    id: Types.ObjectId,
+    friendId: Types.ObjectId
+  ): Promise<Profile> {
+    const profile = await profileModel.findByIdAndUpdate(id, {
+      $push: { friends: friendId },
+    });
+    if (profile) return profile;
+    else throw new Error();
+  }
+
+  async removeFriend(
+    id: Types.ObjectId,
+    friendId: Types.ObjectId
+  ): Promise<Types.ObjectId> {
+    const friendProfile = await profileModel.findByIdAndUpdate(friendId, {
+      $pull: { friends: id },
+    });
+    if (friendProfile) {
+      await profileModel.findByIdAndUpdate(id, {
+        $pull: { friends: friendId },
+      });
+      return friendProfile._id;
+    } else throw new Error("Profile not found!");
+  }
+
+  async removeRequest(
+    id: Types.ObjectId,
+    declinedId: Types.ObjectId
+  ): Promise<void> {
+    await profileModel.findByIdAndUpdate(id, {
+      $pull: { requests: declinedId },
+    });
   }
 
   async createProfile(name: string): Promise<Types.ObjectId> {
@@ -16,23 +65,22 @@ class ProfileService {
     return newProfile._id;
   }
 
-  async getProfile(id: string) {
+  async getProfile(id: Types.ObjectId): Promise<Profile> {
     const profileFound = await profileModel.findById(id);
-    return profileFound;
+    if (profileFound) return profileFound;
+    else throw new Error("Profile not found!");
   }
 
-  async getProfiles(participants: string[]) {
+  async getProfiles(participants: Types.ObjectId[]): Promise<Profile[]> {
     return await profileModel.find({
       _id: { $in: participants },
     });
   }
 
-  async getPopulatedProfile(id: string) {
-    return await profileModel
+  async getChatPopulatedProfile(id: Types.ObjectId): Promise<Profile> {
+    const profileFound = await profileModel
       .findById(id)
       .populate("chats")
-      .populate("friends")
-      .populate("requests")
       .populate({
         path: "chats",
         populate: {
@@ -48,14 +96,17 @@ class ProfileService {
           },
         },
       });
+    if (profileFound) return profileFound;
+    else throw new Error("Profile not found!");
   }
 
-  async getFriends(id: string) {
+  async getFriends(id: Types.ObjectId): Promise<Types.ObjectId[]> {
     const profileFound = await profileModel.findById(id).populate("friends");
-    return profileFound?.friends;
+    if (profileFound) return profileFound.friends;
+    else throw new Error("Profile not found!");
   }
 
-  async getProfileByName(name: string) {
+  async getProfileByName(name: string): Promise<Profile[]> {
     return await profileModel.find({
       name: { $regex: name, $options: "i" },
     });

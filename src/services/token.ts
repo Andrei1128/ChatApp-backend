@@ -1,14 +1,17 @@
-import tokenModel from "../models/token";
+import tokenModel, { Token } from "../models/token";
+import { Types } from "mongoose";
 
 class TokenService {
-  async createToken(token: string): Promise<any> {
+  async createToken(token: string): Promise<void> {
     await tokenModel.create({ content: token });
   }
-  async deleteToken(token: string): Promise<any> {
-    await tokenModel.findOneAndDelete({ content: token });
+  async deleteToken(id: Types.ObjectId): Promise<void> {
+    await tokenModel.findByIdAndDelete(id);
   }
-  async findToken(token: string): Promise<any> {
-    return await tokenModel.findOne({ content: token });
+  async findToken(token: string): Promise<Token> {
+    const tokenFound = await tokenModel.findOne({ content: token });
+    if (tokenFound) return tokenFound;
+    else throw new Error("Token not found!");
   }
 }
 export default new TokenService();

@@ -13,16 +13,27 @@ export default new Server(httpServer);
 const PORT = process.env.PORT;
 mongoose.connect(process.env.MONGO_URL as string);
 
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      myProfileID: mongoose.Types.ObjectId;
+    }
+  }
+}
+
 import "./src/controllers/socket";
 import authRouter from "./src/routers/user";
-import profileRouter from "./src/routers/profile";
 import authGuard from "./src//middlewares/authGuard";
+import profileRouter from "./src/routers/profile";
+import chatRouter from "./src/routers/chat";
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/auth", authRouter);
 app.use("/profile", authGuard, profileRouter);
+app.use("/chat", authGuard, chatRouter);
 
 mongoose.connection.once("open", () => {
   console.log("Connected to MongoDB");

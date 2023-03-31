@@ -6,12 +6,12 @@ import UserService from "../services/user";
 import { Request, Response } from "express";
 
 class UserController {
-  async login(req: Request, res: Response): Promise<any> {
+  async login(req: Request, res: Response) {
     const userFound = await UserService.findUserByEmail(req.body.email);
     if (userFound != null) {
       if (bcrypt.compareSync(req.body.password, userFound.password)) {
         const token = jwt.sign(
-          { profileId: userFound.profile._id },
+          { myProfileID: userFound.profile._id },
           process.env.JWT_SECRET as string,
           {
             expiresIn: process.env.JWT_EXPIRE,
@@ -19,11 +19,11 @@ class UserController {
         );
         await TokenService.createToken(token);
         res.json(token);
-      } else return res.sendStatus(400);
-    } else return res.sendStatus(400);
+      } else res.sendStatus(400);
+    } else res.sendStatus(400);
   }
 
-  async register(req: Request, res: Response): Promise<any> {
+  async register(req: Request, res: Response) {
     if (
       (await UserService.findUserByEmail(req.body.email)) == null &&
       (await UserService.findUserByName(req.body.name)) == null
@@ -39,7 +39,7 @@ class UserController {
         profile: newProfile,
       });
       const token = jwt.sign(
-        { profileId: newUser.profile._id },
+        { myProfileID: newUser.profile._id },
         process.env.JWT_SECRET as string,
         {
           expiresIn: process.env.JWT_EXPIRE,
@@ -47,16 +47,19 @@ class UserController {
       );
       await TokenService.createToken(token);
       res.json(token);
-    } else return res.sendStatus(400);
+    } else {
+      res.sendStatus(400);
+    }
   }
 
-  async logout(req: Request, res: Response): Promise<any> {
+  async logout(req: Request, res: Response) {
     const headerAuth = req.headers.authorization;
     const token = headerAuth && headerAuth.split(" ")[1];
     if (token) {
-      await TokenService.deleteToken(token);
+      const tokenFound = await TokenService.findToken(token);
+      await TokenService.deleteToken(tokenFound._id);
       res.sendStatus(200);
-    } else return res.sendStatus(400);
+    } else res.sendStatus(400);
   }
 }
 export default new UserController();

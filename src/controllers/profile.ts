@@ -1,110 +1,57 @@
 import ProfileService from "../services/profile";
-import ChatService from "../services/chat";
 import { Request, Response } from "express";
 
 class ProfileController {
-  async findChat(req: Request, res: Response): Promise<any> {
-    const chatFound = await ChatService.getPopulatedChat(req.params.id);
-    res.json(chatFound?.messages);
-  }
-
-  async createChat(req: Request, res: Response): Promise<any> {
-    // try {
-    const participants = req.body.participants;
-    const newChat = await ChatService.createNewChat(participants);
-    ProfileService.findProfilesAndAddChat(participants, newChat._id);
-    res.json(newChat);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
-  }
-
-  async addFriend(req: Request, res: Response): Promise<any> {
-    // try {
-    const profileFound = await ProfileService.getProfile(req.body.id);
-    // profileFound?.requests.push(req.headers["myProfileId"]);
-    await profileFound?.save();
+  async addFriend(req: Request, res: Response) {
+    await ProfileService.addRequest(req.body.id, req.myProfileID);
     res.json(200);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
   }
 
-  async acceptFriend(req: Request, res: Response): Promise<any> {
-    // try {
-    const myProfile = await ProfileService.getProfile(
-      req.headers["myProfileId"] as string
+  async acceptFriend(req: Request, res: Response) {
+    const friendId = req.body.id;
+    const friendProfile = await ProfileService.addFriend(
+      friendId,
+      req.myProfileID
     );
-    const otherProfile = await ProfileService.getProfile(req.body.id);
-    // myProfile?.requests.remove(req.body.id);
-    myProfile?.friends.push(req.body.id);
-    // otherProfile?.friends.push(req.headers["myProfileId"]);
-    myProfile?.save();
-    otherProfile?.save();
-    res.json(otherProfile);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
-  }
-  async declineFriend(req: Request, res: Response): Promise<any> {
-    // try {
-    const myProfile = await ProfileService.getProfile(
-      req.headers["myProfileId"] as string
+    await ProfileService.addFriendAndRemoveRequest(
+      req.myProfileID,
+      req.body.id
     );
-    // myProfile?.requests.remove(req.body.id);
-    myProfile?.save();
-    res.json(req.body.id);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
+    res.json(friendProfile);
   }
-  async removeFriend(req: Request, res: Response): Promise<any> {
-    // try {
-    const myProfile = await ProfileService.getProfile(
-      req.headers["myProfileId"] as string
-    );
-    // myProfile?.friends.remove(req.body.id);
-    myProfile?.save();
-    res.json(req.body.id);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
+
+  async declineFriend(req: Request, res: Response) {
+    const declinedId = req.body.id;
+    await ProfileService.removeRequest(req.myProfileID, req.body.id);
+    res.json(declinedId);
   }
-  async getMyProfile(req: Request, res: Response): Promise<any> {
-    // try {
-    const myProfile = await ProfileService.getPopulatedProfile(
-      req.headers["myProfileId"] as string
+
+  async removeFriend(req: Request, res: Response) {
+    const removedFriendId = req.body.id;
+    await ProfileService.removeFriend(req.myProfileID, removedFriendId);
+    res.json(removedFriendId);
+  }
+
+  async getMyProfile(req: Request, res: Response) {
+    const myProfile = await ProfileService.getChatPopulatedProfile(
+      req.myProfileID
     );
     res.json(myProfile);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
   }
-  async getFriendProfile(req: Request, res: Response): Promise<any> {
-    // try {
+
+  async getFriendProfile(req: Request, res: Response) {
     const profileFound = await ProfileService.getProfile(req.body.id);
     res.json(profileFound);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
   }
-  async getAllFriendProfiles(req: Request, res: Response): Promise<any> {
-    // try {
-    const myProfile = await ProfileService.getFriends(
-      req.headers["myProfileId"] as string
-    );
-    // res.json(myProfile?.friends);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
+
+  async getFriendsProfiles(req: Request, res: Response) {
+    const friends = await ProfileService.getFriends(req.myProfileID);
+    res.json(friends);
   }
-  async getPeople(req: Request, res: Response): Promise<any> {
-    // try {
+
+  async getPeople(req: Request, res: Response) {
     const peoples = await ProfileService.getProfileByName(req.params.name);
     res.json(peoples);
-    // } catch (e) {
-    //   res.sendStatus(400);
-    // }
   }
 }
 export default new ProfileController();

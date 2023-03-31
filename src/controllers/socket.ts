@@ -14,10 +14,10 @@ io.on("connection", (socket: Socket) => {
 io.on("connection", (socket: Socket) => {
   socket.on(
     "private message",
-    async (message: string, from: Types.ObjectId, id: string) => {
+    async (message: string, from: Types.ObjectId, id: Types.ObjectId) => {
       const messageId = await MessageService.createMessage(message, from);
-      io.emit(id, { content: message, from: from });
-      ChatService.findChatAndAddMessage(id, messageId);
+      io.emit(id as unknown as string, { content: message, from: from });
+      ChatService.AddMessage(id, messageId);
     }
   );
 });
