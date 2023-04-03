@@ -11,5 +11,6 @@ router.get("/myProfile", ProfileController.getMyProfile);
 router.get("/friends/:id", ProfileController.getFriendProfile);
 router.get("/friends", ProfileController.getFriendsProfiles);
 router.get("/peoples/:name", ProfileController.getPeople);
+router.get("/requests", ProfileController.getRequests);
 
 export default router;

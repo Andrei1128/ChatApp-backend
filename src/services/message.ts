@@ -6,6 +6,7 @@ class MessageController {
     content: string,
     from: Types.ObjectId
   ): Promise<Types.ObjectId> {
+    console.log(content);
     const newMessage = await messageModel.create({ content, from });
     return newMessage._id;
   }

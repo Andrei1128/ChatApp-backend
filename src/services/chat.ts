@@ -17,11 +17,7 @@ class ChatService {
   }
 
   async AddMessage(id: Types.ObjectId, message: Types.ObjectId): Promise<void> {
-    const chatFound = await chatModel.findById(id);
-    if (chatFound) {
-      chatFound?.messages.push(message);
-      await chatFound?.save();
-    } else throw new Error("Chat not found!");
+    await chatModel.findByIdAndUpdate(id, { $push: { messages: message } });
   }
 }
 

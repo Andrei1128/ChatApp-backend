@@ -1,8 +1,9 @@
+import { Types } from "mongoose";
 import io from "../../index";
+import { Message } from "../models/message";
 import ChatService from "../services/chat";
 import MessageService from "../services/message";
 import { Socket } from "socket.io";
-import { Types } from "mongoose";
 
 io.on("connection", (socket: Socket) => {
   console.log(`${socket.id} connected..`);
@@ -14,10 +15,17 @@ io.on("connection", (socket: Socket) => {
 io.on("connection", (socket: Socket) => {
   socket.on(
     "private message",
-    async (message: string, from: Types.ObjectId, id: Types.ObjectId) => {
-      const messageId = await MessageService.createMessage(message, from);
-      io.emit(id as unknown as string, { content: message, from: from });
-      ChatService.AddMessage(id, messageId);
+    async (message: Message, convId: Types.ObjectId | string) => {
+      console.log(message);
+      const messageId = await MessageService.createMessage(
+        message.content,
+        message.from
+      );
+      io.emit(convId as string, {
+        content: message.content,
+        from: message.from,
+      });
+      await ChatService.AddMessage(convId as Types.ObjectId, messageId);
     }
   );
 });

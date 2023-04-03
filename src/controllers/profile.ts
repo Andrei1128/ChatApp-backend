@@ -9,27 +9,29 @@ class ProfileController {
 
   async acceptFriend(req: Request, res: Response) {
     const friendId = req.body.id;
-    const friendProfile = await ProfileService.addFriend(
-      friendId,
-      req.myProfileID
-    );
+    await ProfileService.addFriend(friendId, req.myProfileID);
     await ProfileService.addFriendAndRemoveRequest(
       req.myProfileID,
       req.body.id
     );
-    res.json(friendProfile);
+    res.json(200);
   }
 
   async declineFriend(req: Request, res: Response) {
     const declinedId = req.body.id;
-    await ProfileService.removeRequest(req.myProfileID, req.body.id);
-    res.json(declinedId);
+    await ProfileService.removeRequest(req.myProfileID, declinedId);
+    res.json(200);
   }
 
   async removeFriend(req: Request, res: Response) {
     const removedFriendId = req.body.id;
     await ProfileService.removeFriend(req.myProfileID, removedFriendId);
     res.json(removedFriendId);
+  }
+
+  async getRequests(req: Request, res: Response) {
+    const requests = await ProfileService.getRequests(req.myProfileID);
+    res.json(requests);
   }
 
   async getMyProfile(req: Request, res: Response) {

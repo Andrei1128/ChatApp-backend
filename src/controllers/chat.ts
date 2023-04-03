@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import ChatService from "../services/chat";
 import ProfileService from "../services/profile";
 import { Request, Response } from "express";
@@ -9,7 +10,7 @@ class ChatController {
   }
 
   async createChat(req: Request, res: Response) {
-    const participants = req.body.participants;
+    const participants: Types.ObjectId[] = req.body.participants;
     const newChat = await ChatService.createChat(participants);
     ProfileService.addChat(participants, newChat._id);
     res.json(newChat);

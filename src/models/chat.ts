@@ -11,11 +11,11 @@ const chatModel = model<Chat>(
     participants: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Profile",
+        ref: "profile",
         required: true,
       },
     ],
-    messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+    messages: [{ type: Schema.Types.ObjectId, ref: "message" }],
   })
 );
 export default chatModel;

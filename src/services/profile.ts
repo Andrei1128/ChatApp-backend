@@ -2,7 +2,10 @@ import { Types } from "mongoose";
 import profileModel, { Profile } from "../models/profile";
 
 class ProfileService {
-  async addChat(participants: string[], chatId: Types.ObjectId): Promise<void> {
+  async addChat(
+    participants: Types.ObjectId[],
+    chatId: Types.ObjectId
+  ): Promise<void> {
     await profileModel.updateMany(
       { _id: { $in: participants } },
       { $push: { chats: chatId } }
@@ -23,15 +26,10 @@ class ProfileService {
     });
   }
 
-  async addFriend(
-    id: Types.ObjectId,
-    friendId: Types.ObjectId
-  ): Promise<Profile> {
-    const profile = await profileModel.findByIdAndUpdate(id, {
+  async addFriend(id: Types.ObjectId, friendId: Types.ObjectId): Promise<void> {
+    await profileModel.findByIdAndUpdate(id, {
       $push: { friends: friendId },
     });
-    if (profile) return profile;
-    else throw new Error();
   }
 
   async removeFriend(
@@ -97,6 +95,12 @@ class ProfileService {
         },
       });
     if (profileFound) return profileFound;
+    else throw new Error("Profile not found!");
+  }
+
+  async getRequests(id: Types.ObjectId): Promise<Types.ObjectId[]> {
+    const profileFound = await profileModel.findById(id).populate("requests");
+    if (profileFound) return profileFound.requests;
     else throw new Error("Profile not found!");
   }
 

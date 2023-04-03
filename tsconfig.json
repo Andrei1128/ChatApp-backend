@@ -1,9 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES2022",
     "module": "commonjs",
     "esModuleInterop": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
     "strict": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "strictPropertyInitialization": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "outDir": "dist",
+    "removeComments": true
   },
   "include": ["src/**/*.ts", "index.ts"]
 }

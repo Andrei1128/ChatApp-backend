@@ -4,15 +4,15 @@ class UserService {
   async createUser(newUser: User): Promise<User> {
     return await userModel.create(newUser);
   }
-  async findUserByEmail(email: string): Promise<User> {
+  async findUserByEmail(email: string): Promise<User | null> {
     const userFound = await userModel.findOne({ email }).populate("profile");
     if (userFound) return userFound;
-    else throw new Error("User not found!");
+    else return null;
   }
-  async findUserByName(name: string): Promise<User> {
+  async findUserByName(name: string): Promise<User | null> {
     const userFound = await userModel.findOne({ name }).populate("profile");
     if (userFound) return userFound;
-    else throw new Error("User not found!");
+    else return null;
   }
 }
 

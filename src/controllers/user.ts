@@ -24,15 +24,12 @@ class UserController {
   }
 
   async register(req: Request, res: Response) {
-    if (
-      (await UserService.findUserByEmail(req.body.email)) == null &&
-      (await UserService.findUserByName(req.body.name)) == null
-    ) {
+    if (!(await UserService.findUserByEmail(req.body.email))) {
       const salt = bcrypt.genSaltSync(
         parseInt(process.env.SALT_ROUND as string)
       );
       const hash = bcrypt.hashSync(req.body.password, salt);
-      const newProfile = await ProfileService.createProfile(req.body.name);
+      const newProfile = await ProfileService.createProfile(req.body.username);
       const newUser = await UserService.createUser({
         ...req.body,
         password: hash,
