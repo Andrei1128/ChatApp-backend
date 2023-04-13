@@ -11,9 +11,17 @@ class ChatController {
 
   async createChat(req: Request, res: Response) {
     const participants: Types.ObjectId[] = req.body.participants;
-    const newChat = await ChatService.createChat(participants);
-    ProfileService.addChat(participants, newChat._id);
-    res.json(newChat);
+    let chatFound;
+    if (participants.length === 2) {
+      chatFound = await ChatService.findChat(participants);
+    }
+    if (chatFound) {
+      res.json(chatFound._id);
+    } else {
+      const newChat = await ChatService.createChat(participants);
+      ProfileService.addChat(participants, newChat._id);
+      res.json(newChat);
+    }
   }
 }
 

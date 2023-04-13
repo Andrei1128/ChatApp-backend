@@ -9,6 +9,7 @@ class ProfileController {
 
   async acceptFriend(req: Request, res: Response) {
     const friendId = req.body.id;
+    console.log(req.body);
     await ProfileService.addFriend(friendId, req.myProfileID);
     await ProfileService.addFriendAndRemoveRequest(
       req.myProfileID,
@@ -35,9 +36,7 @@ class ProfileController {
   }
 
   async getMyProfile(req: Request, res: Response) {
-    const myProfile = await ProfileService.getChatPopulatedProfile(
-      req.myProfileID
-    );
+    const myProfile = await ProfileService.getPopulatedProfile(req.myProfileID);
     res.json(myProfile);
   }
 

@@ -75,9 +75,11 @@ class ProfileService {
     });
   }
 
-  async getChatPopulatedProfile(id: Types.ObjectId): Promise<Profile> {
+  async getPopulatedProfile(id: Types.ObjectId): Promise<Profile> {
     const profileFound = await profileModel
       .findById(id)
+      .populate("friends")
+      .populate("requests")
       .populate("chats")
       .populate({
         path: "chats",

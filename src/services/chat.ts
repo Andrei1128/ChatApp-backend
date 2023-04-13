@@ -15,6 +15,13 @@ class ChatService {
     const newChat = await chatModel.create({ participants });
     return newChat;
   }
+  async findChat(participants: Types.ObjectId[]): Promise<Chat | undefined> {
+    const chatFound = await chatModel.findOne({
+      participants: { $all: participants },
+    });
+    if (chatFound) return chatFound;
+    else return undefined;
+  }
 
   async AddMessage(id: Types.ObjectId, message: Types.ObjectId): Promise<void> {
     await chatModel.findByIdAndUpdate(id, { $push: { messages: message } });

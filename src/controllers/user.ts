@@ -19,8 +19,8 @@ class UserController {
         );
         await TokenService.createToken(token);
         res.json(token);
-      } else res.sendStatus(400);
-    } else res.sendStatus(400);
+      } else res.json(400);
+    } else res.json(400);
   }
 
   async register(req: Request, res: Response) {
@@ -45,7 +45,7 @@ class UserController {
       await TokenService.createToken(token);
       res.json(token);
     } else {
-      res.sendStatus(400);
+      res.json(400);
     }
   }
 
@@ -55,8 +55,8 @@ class UserController {
     if (token) {
       const tokenFound = await TokenService.findToken(token);
       await TokenService.deleteToken(tokenFound._id);
-      res.sendStatus(200);
-    } else res.sendStatus(400);
+      res.json(200);
+    } else res.json(400);
   }
 }
 export default new UserController();
