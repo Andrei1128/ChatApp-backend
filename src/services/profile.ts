@@ -11,7 +11,6 @@ class ProfileService {
       { $push: { chats: chatId } }
     );
   }
-
   async addRequest(id: Types.ObjectId, myId: Types.ObjectId): Promise<void> {
     await profileModel.findByIdAndUpdate(id, { $push: { requests: myId } });
   }
@@ -19,11 +18,13 @@ class ProfileService {
   async addFriendAndRemoveRequest(
     id: Types.ObjectId,
     friendId: Types.ObjectId
-  ): Promise<void> {
-    await profileModel.findByIdAndUpdate(id, {
+  ): Promise<Profile> {
+    const profile = await profileModel.findByIdAndUpdate(id, {
       $push: { friends: friendId },
       $pull: { requests: friendId },
     });
+    if (profile) return profile;
+    else throw new Error("Profile not found!");
   }
 
   async addFriend(id: Types.ObjectId, friendId: Types.ObjectId): Promise<void> {

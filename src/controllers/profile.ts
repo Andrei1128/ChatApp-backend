@@ -1,20 +1,24 @@
 import ProfileService from "../services/profile";
 import { Request, Response } from "express";
+import io from "../../index";
 
 class ProfileController {
-  async addFriend(req: Request, res: Response) {
-    await ProfileService.addRequest(req.body.id, req.myProfileID);
+  async acceptFriend(req: Request, res: Response) {
+    const friendId = req.body.id;
+    const myId = req.myProfileID;
+    await ProfileService.addFriend(friendId, myId);
+    const myProfile = await ProfileService.addFriendAndRemoveRequest(
+      myId,
+      req.body.id
+    );
+    io.to(friendId).emit("new friend", myProfile);
     res.json(200);
   }
 
-  async acceptFriend(req: Request, res: Response) {
-    const friendId = req.body.id;
-    console.log(req.body);
-    await ProfileService.addFriend(friendId, req.myProfileID);
-    await ProfileService.addFriendAndRemoveRequest(
-      req.myProfileID,
-      req.body.id
-    );
+  async addFriend(req: Request, res: Response) {
+    await ProfileService.addRequest(req.body.id, req.myProfileID);
+    const myProfile = await ProfileService.getProfile(req.myProfileID);
+    io.to(req.body.id).emit("new request", myProfile);
     res.json(200);
   }
 
@@ -27,6 +31,7 @@ class ProfileController {
   async removeFriend(req: Request, res: Response) {
     const removedFriendId = req.body.id;
     await ProfileService.removeFriend(req.myProfileID, removedFriendId);
+    io.to(removedFriendId).emit("rem friend", req.myProfileID);
     res.json(removedFriendId);
   }
 
