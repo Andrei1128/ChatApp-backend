@@ -12,9 +12,12 @@ class ChatService {
   }
 
   async createChat(participants: Types.ObjectId[]): Promise<Chat> {
-    const newChat = await chatModel.create({ participants });
+    const newChat = (await chatModel.create({ participants })).populate(
+      "participants"
+    );
     return newChat;
   }
+
   async findChat(participants: Types.ObjectId[]): Promise<Chat | undefined> {
     const chatFound = await chatModel.findOne({
       participants: { $all: participants },
@@ -25,6 +28,10 @@ class ChatService {
 
   async AddMessage(id: Types.ObjectId, message: Types.ObjectId): Promise<void> {
     await chatModel.findByIdAndUpdate(id, { $push: { messages: message } });
+  }
+
+  async deleteChat(id: string): Promise<void> {
+    await chatModel.findByIdAndDelete(id);
   }
 }
 

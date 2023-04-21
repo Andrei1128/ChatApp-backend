@@ -23,6 +23,10 @@ class ChatController {
       res.json(newChat);
     }
   }
+  async deleteChat(req: Request, res: Response) {
+    await ChatService.deleteChat(req.params.id);
+    res.status(200).json("Succes!");
+  }
 }
 
 export default new ChatController();

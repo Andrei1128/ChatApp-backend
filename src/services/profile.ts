@@ -1,7 +1,14 @@
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 import profileModel, { Profile } from "../models/profile";
 
 class ProfileService {
+  async findByIdAndUpdateName(id: ObjectId, name: string) {
+    await profileModel.findOneAndUpdate(id, { name: name });
+  }
+  async findByIdAndUpdateAbout(id: ObjectId, about: string) {
+    await profileModel.findOneAndUpdate(id, { about: about });
+  }
+
   async addChat(
     participants: Types.ObjectId[],
     chatId: Types.ObjectId
@@ -64,7 +71,7 @@ class ProfileService {
     return newProfile._id;
   }
 
-  async getProfile(id: Types.ObjectId): Promise<Profile> {
+  async getProfile(id: string | Types.ObjectId): Promise<Profile> {
     const profileFound = await profileModel.findById(id);
     if (profileFound) return profileFound;
     else throw new Error("Profile not found!");
