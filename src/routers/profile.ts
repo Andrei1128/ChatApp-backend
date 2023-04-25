@@ -9,6 +9,7 @@ router.patch("/decline", ProfileController.declineFriend);
 router.patch("/remove", ProfileController.removeFriend);
 router.patch("/updateName", ProfileController.updateName);
 router.patch("/updateAbout", ProfileController.updateAbout);
+router.patch("/updateImage", ProfileController.updateImage);
 router.get("/myProfile", ProfileController.getMyProfile);
 router.get("/friends/:id", ProfileController.getFriendProfile);
 router.get("/friends", ProfileController.getFriendsProfiles);

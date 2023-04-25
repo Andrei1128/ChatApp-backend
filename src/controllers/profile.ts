@@ -3,12 +3,23 @@ import { Request, Response } from "express";
 import io from "../../index";
 
 class ProfileController {
-  async updateName(req: Request) {
-    console.log(req.body.id, req.body.name);
-    await ProfileService.findByIdAndUpdateName(req.body.id, req.body.name);
+  async updateName(req: Request, res: Response) {
+    await ProfileService.findByIdAndUpdateName(req.myProfileID, req.body.name);
+    res.status(200).json("Succes!");
   }
-  async updateAbout(req: Request) {
-    await ProfileService.findByIdAndUpdateAbout(req.body.id, req.body.about);
+  async updateAbout(req: Request, res: Response) {
+    await ProfileService.findByIdAndUpdateAbout(
+      req.myProfileID,
+      req.body.about
+    );
+    res.status(200).json("Succes!");
+  }
+  async updateImage(req: Request, res: Response) {
+    await ProfileService.findByIdAndUpdateImage(
+      req.myProfileID,
+      req.body.image
+    );
+    res.status(200).json("Succes!");
   }
 
   async acceptFriend(req: Request, res: Response) {
@@ -57,6 +68,7 @@ class ProfileController {
     const profileFound = await ProfileService.getProfile(req.params.id);
     res.json({
       name: profileFound.name,
+      image: profileFound.image,
       about: profileFound.about,
     });
   }

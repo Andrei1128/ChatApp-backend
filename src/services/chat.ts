@@ -2,17 +2,34 @@ import { Types } from "mongoose";
 import chatModel, { Chat } from "../models/chat";
 
 class ChatService {
-  async getPopulatedChat(id: string): Promise<Chat> {
-    const chatFound = await chatModel
-      .findById(id)
-      .populate("messages")
-      .populate({ path: "messages", populate: { path: "from" } });
+  async findAndUpdateName(id: Types.ObjectId, name: string): Promise<void> {
+    await chatModel.findByIdAndUpdate(id, { name: name });
+  }
+
+  async findAndUpdateAbout(id: Types.ObjectId, about: string): Promise<void> {
+    await chatModel.findByIdAndUpdate(id, { about: about });
+  }
+  async findAndUpdateImage(id: Types.ObjectId, image: string): Promise<void> {
+    await chatModel.findByIdAndUpdate(id, { image: image });
+  }
+
+  async getChat(id: string): Promise<Chat> {
+    const chatFound = await chatModel.findById(id).populate("participants");
     if (chatFound) return chatFound;
     else throw new Error("Chat not found!");
   }
 
   async createChat(participants: Types.ObjectId[]): Promise<Chat> {
     const newChat = (await chatModel.create({ participants })).populate(
+      "participants"
+    );
+    return newChat;
+  }
+  async createGroup(
+    participants: Types.ObjectId[],
+    name: string
+  ): Promise<Chat> {
+    const newChat = (await chatModel.create({ participants, name })).populate(
       "participants"
     );
     return newChat;

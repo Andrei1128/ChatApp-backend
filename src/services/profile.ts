@@ -1,12 +1,15 @@
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
 import profileModel, { Profile } from "../models/profile";
 
 class ProfileService {
-  async findByIdAndUpdateName(id: ObjectId, name: string) {
-    await profileModel.findOneAndUpdate(id, { name: name });
+  async findByIdAndUpdateName(id: Types.ObjectId, name: string) {
+    await profileModel.findByIdAndUpdate(id, { name: name });
   }
-  async findByIdAndUpdateAbout(id: ObjectId, about: string) {
-    await profileModel.findOneAndUpdate(id, { about: about });
+  async findByIdAndUpdateAbout(id: Types.ObjectId, about: string) {
+    await profileModel.findByIdAndUpdate(id, { about: about });
+  }
+  async findByIdAndUpdateImage(id: Types.ObjectId, image: string) {
+    await profileModel.findByIdAndUpdate(id, { image: image });
   }
 
   async addChat(
