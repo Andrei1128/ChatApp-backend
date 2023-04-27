@@ -3,6 +3,7 @@ import { Types, Document, Schema, model } from "mongoose";
 export interface Message extends Document {
   content: string;
   from: Types.ObjectId;
+  timestamp: number;
 }
 
 const message = model<Message>(
@@ -14,6 +15,7 @@ const message = model<Message>(
       ref: "profile",
       required: true,
     },
+    timestamp: { type: Number },
   })
 );
 export default message;

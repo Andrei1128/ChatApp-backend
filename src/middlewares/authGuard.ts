@@ -18,10 +18,10 @@ const authGuard = async (req: Request, res: Response, next: NextFunction) => {
         next();
       } catch (e) {
         await TokenService.deleteToken(tokenFound._id);
-        res.sendStatus(401);
+        res.status(401).json("Session expired!");
       }
-    } else res.sendStatus(401);
-  } else res.sendStatus(401);
+    } else res.status(401).json("Token not found!");
+  } else res.status(401).json("Token not provided!");
 };
 
 export default authGuard;

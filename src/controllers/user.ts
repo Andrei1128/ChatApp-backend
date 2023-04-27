@@ -19,8 +19,8 @@ class UserController {
         );
         await TokenService.createToken(token);
         res.json(token);
-      } else res.json(400);
-    } else res.json(400);
+      } else res.status(400).json("Wrong password!");
+    } else res.status(400).json("Invalid email!");
   }
 
   async register(req: Request, res: Response) {
@@ -45,7 +45,7 @@ class UserController {
       await TokenService.createToken(token);
       res.json(token);
     } else {
-      res.json(400);
+      res.status(400).json("Email already used!");
     }
   }
 
@@ -55,8 +55,8 @@ class UserController {
     if (token) {
       const tokenFound = await TokenService.findToken(token);
       await TokenService.deleteToken(tokenFound._id);
-      res.json(200);
-    } else res.json(400);
+      res.status(200);
+    } else res.status(400);
   }
 }
 export default new UserController();

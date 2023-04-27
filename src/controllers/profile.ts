@@ -70,6 +70,7 @@ class ProfileController {
       name: profileFound.name,
       image: profileFound.image,
       about: profileFound.about,
+      online: profileFound.online,
     });
   }
 
