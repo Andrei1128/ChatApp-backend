@@ -1,11 +1,10 @@
-import { Router } from "express";
 import UserController from "../controllers/user";
 import { registerValidator } from "../middlewares/authValidator";
 
-const router = Router();
+import HandledRouter from "./HandledRouter";
 
-router.post("/login", UserController.login);
-router.post("/register", registerValidator, UserController.register);
-router.delete("/logout", UserController.logout);
+HandledRouter.post("/login", UserController.login);
+HandledRouter.post("/register", registerValidator, UserController.register);
+HandledRouter.delete("/logout", UserController.logout);
 
-export default router;
+export default HandledRouter.getRouter();

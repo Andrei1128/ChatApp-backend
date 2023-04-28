@@ -16,7 +16,7 @@ class ChatController {
   }
 
   async updateImage(req: Request, res: Response) {
-    await ChatService.findAndUpdateImage(req.body.id, req.body.image);
+    await ChatService.findAndUpdateImage(req.body.id, req.body.imageBuffer);
     res.status(200).json("Succes!");
   }
   async updateName(req: Request, res: Response) {

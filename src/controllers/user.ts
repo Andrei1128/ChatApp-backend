@@ -55,8 +55,8 @@ class UserController {
     if (token) {
       const tokenFound = await TokenService.findToken(token);
       await TokenService.deleteToken(tokenFound._id);
-      res.status(200);
-    } else res.status(400);
+      res.status(200).json("Succes!");
+    } else res.status(400).json("Something went wrong!");
   }
 }
 export default new UserController();

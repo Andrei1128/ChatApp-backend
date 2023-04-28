@@ -17,7 +17,7 @@ class ProfileController {
   async updateImage(req: Request, res: Response) {
     await ProfileService.findByIdAndUpdateImage(
       req.myProfileID,
-      req.body.image
+      req.body.imageBuffer
     );
     res.status(200).json("Succes!");
   }

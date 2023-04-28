@@ -1,17 +1,20 @@
-import { Router } from "express";
 import ChatController from "../controllers/chat";
 import {
   imageValidator,
   updateNameValidator,
 } from "../middlewares/profileValidator";
 
-const router = Router();
+import HandledRouter from "./HandledRouter";
 
-router.patch("/updateImage", imageValidator, ChatController.updateImage);
-router.patch("/updateName", updateNameValidator, ChatController.updateName);
-router.patch("/updateAbout", ChatController.updateAbout);
-router.post("/chat", updateNameValidator, ChatController.createChat);
-router.get("/:id", ChatController.findChat);
-router.delete("/delete/:id", ChatController.deleteChat);
+HandledRouter.patch("/updateImage", imageValidator, ChatController.updateImage);
+HandledRouter.patch(
+  "/updateName",
+  updateNameValidator,
+  ChatController.updateName
+);
+HandledRouter.patch("/updateAbout", ChatController.updateAbout);
+HandledRouter.post("/chat", updateNameValidator, ChatController.createChat);
+HandledRouter.get("/:id", ChatController.findChat);
+HandledRouter.delete("/delete/:id", ChatController.deleteChat);
 
-export default router;
+export default HandledRouter.getRouter();

@@ -1,23 +1,30 @@
-import { Router } from "express";
 import ProfileController from "../controllers/profile";
 import {
   updateNameValidator,
   imageValidator,
 } from "../middlewares/profileValidator";
 
-const router = Router();
+import HandledRouter from "./HandledRouter";
 
-router.patch("/add", ProfileController.addFriend);
-router.patch("/accept", ProfileController.acceptFriend);
-router.patch("/decline", ProfileController.declineFriend);
-router.patch("/remove", ProfileController.removeFriend);
-router.patch("/updateName", updateNameValidator, ProfileController.updateName);
-router.patch("/updateAbout", ProfileController.updateAbout);
-router.patch("/updateImage", imageValidator, ProfileController.updateImage);
-router.get("/myProfile", ProfileController.getMyProfile);
-router.get("/friends/:id", ProfileController.getFriendProfile);
-router.get("/friends", ProfileController.getFriendsProfiles);
-router.get("/peoples/:name", ProfileController.getPeople);
-router.get("/requests", ProfileController.getRequests);
+HandledRouter.patch("/add", ProfileController.addFriend);
+HandledRouter.patch("/accept", ProfileController.acceptFriend);
+HandledRouter.patch("/decline", ProfileController.declineFriend);
+HandledRouter.patch("/remove", ProfileController.removeFriend);
+HandledRouter.patch(
+  "/updateName",
+  updateNameValidator,
+  ProfileController.updateName
+);
+HandledRouter.patch("/updateAbout", ProfileController.updateAbout);
+HandledRouter.patch(
+  "/updateImage",
+  imageValidator,
+  ProfileController.updateImage
+);
+HandledRouter.get("/myProfile", ProfileController.getMyProfile);
+HandledRouter.get("/friends/:id", ProfileController.getFriendProfile);
+HandledRouter.get("/friends", ProfileController.getFriendsProfiles);
+HandledRouter.get("/peoples/:name", ProfileController.getPeople);
+HandledRouter.get("/requests", ProfileController.getRequests);
 
-export default router;
+export default HandledRouter.getRouter();
