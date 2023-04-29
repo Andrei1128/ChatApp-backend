@@ -4,17 +4,19 @@ import {
   updateNameValidator,
 } from "../middlewares/profileValidator";
 
-import HandledRouter from "./HandledRouter";
+import HandledRouter from "../utilities/HandledRouter";
 
-HandledRouter.patch("/updateImage", imageValidator, ChatController.updateImage);
-HandledRouter.patch(
+const handledRouter = new HandledRouter();
+
+handledRouter.patch("/updateImage", imageValidator, ChatController.updateImage);
+handledRouter.patch(
   "/updateName",
   updateNameValidator,
   ChatController.updateName
 );
-HandledRouter.patch("/updateAbout", ChatController.updateAbout);
-HandledRouter.post("/chat", updateNameValidator, ChatController.createChat);
-HandledRouter.get("/:id", ChatController.findChat);
-HandledRouter.delete("/delete/:id", ChatController.deleteChat);
+handledRouter.patch("/updateAbout", ChatController.updateAbout);
+handledRouter.post("/chat", updateNameValidator, ChatController.createChat);
+handledRouter.get("/:id", ChatController.findChat);
+handledRouter.delete("/delete/:id", ChatController.deleteChat);
 
-export default HandledRouter.getRouter();
+export default handledRouter.getRouter();

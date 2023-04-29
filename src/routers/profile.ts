@@ -4,27 +4,28 @@ import {
   imageValidator,
 } from "../middlewares/profileValidator";
 
-import HandledRouter from "./HandledRouter";
+import HandledRouter from "../utilities/HandledRouter";
+const handledRouter = new HandledRouter();
 
-HandledRouter.patch("/add", ProfileController.addFriend);
-HandledRouter.patch("/accept", ProfileController.acceptFriend);
-HandledRouter.patch("/decline", ProfileController.declineFriend);
-HandledRouter.patch("/remove", ProfileController.removeFriend);
-HandledRouter.patch(
+handledRouter.patch("/add", ProfileController.addFriend);
+handledRouter.patch("/accept", ProfileController.acceptFriend);
+handledRouter.patch("/decline", ProfileController.declineFriend);
+handledRouter.patch("/remove", ProfileController.removeFriend);
+handledRouter.patch(
   "/updateName",
   updateNameValidator,
   ProfileController.updateName
 );
-HandledRouter.patch("/updateAbout", ProfileController.updateAbout);
-HandledRouter.patch(
+handledRouter.patch("/updateAbout", ProfileController.updateAbout);
+handledRouter.patch(
   "/updateImage",
   imageValidator,
   ProfileController.updateImage
 );
-HandledRouter.get("/myProfile", ProfileController.getMyProfile);
-HandledRouter.get("/friends/:id", ProfileController.getFriendProfile);
-HandledRouter.get("/friends", ProfileController.getFriendsProfiles);
-HandledRouter.get("/peoples/:name", ProfileController.getPeople);
-HandledRouter.get("/requests", ProfileController.getRequests);
+handledRouter.get("/myProfile", ProfileController.getMyProfile);
+handledRouter.get("/friends/:id", ProfileController.getFriendProfile);
+handledRouter.get("/friends", ProfileController.getFriendsProfiles);
+handledRouter.get("/peoples/:name", ProfileController.getPeople);
+handledRouter.get("/requests", ProfileController.getRequests);
 
-export default HandledRouter.getRouter();
+export default handledRouter.getRouter();

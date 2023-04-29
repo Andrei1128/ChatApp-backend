@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import TokenService from "../services/token";
 import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
+import handleError from "../utilities/errorHandler";
 
 const authGuard = async (req: Request, res: Response, next: NextFunction) => {
   const headerAuth = req.headers.authorization;
@@ -24,4 +25,4 @@ const authGuard = async (req: Request, res: Response, next: NextFunction) => {
   } else res.status(401).json("Token not provided!");
 };
 
-export default authGuard;
+export default handleError(authGuard);

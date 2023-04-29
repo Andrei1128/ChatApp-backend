@@ -7,14 +7,14 @@ const imageValidator = (req: Request, res: Response, next: NextFunction) => {
   const regex = /^data:image\/([\w/+\-.,]+);base64,/;
   const match = data.match(regex);
   if (!match) {
-    res.status(400).json({ error: "Invalid image data" });
+    res.status(400).json("Invalid image data");
     return;
   }
   const base64Data = data.replace(/^data:image\/\w+;base64,/, "");
   const buffer = Buffer.from(base64Data, "base64");
   const img = new Image();
   img.onerror = () => {
-    res.status(400).json({ error: "Invalid image data" });
+    res.status(400).json("Invalid image data");
     return;
   };
   img.onload = () => {
@@ -29,10 +29,13 @@ const updateNameValidator = (
   res: Response,
   next: NextFunction
 ) => {
-  const nameLength = req.body.name.length;
-  if (nameLength > 3 && nameLength < 17) {
-    next();
-  } else res.status(400).json("Name should have between 4 and 16 characters!");
+  if (req.body.name) {
+    const nameLength = req.body.name.length;
+    if (nameLength > 3 && nameLength < 17) {
+      next();
+    } else
+      res.status(400).json("Name should have between 4 and 16 characters!");
+  } else next();
 };
 
 export { updateNameValidator, imageValidator };

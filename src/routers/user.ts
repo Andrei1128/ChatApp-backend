@@ -1,10 +1,11 @@
 import UserController from "../controllers/user";
 import { registerValidator } from "../middlewares/authValidator";
 
-import HandledRouter from "./HandledRouter";
+import HandledRouter from "../utilities/HandledRouter";
+const handledRouter = new HandledRouter();
 
-HandledRouter.post("/login", UserController.login);
-HandledRouter.post("/register", registerValidator, UserController.register);
-HandledRouter.delete("/logout", UserController.logout);
+handledRouter.post("/login", UserController.login);
+handledRouter.post("/register", registerValidator, UserController.register);
+handledRouter.delete("/logout", UserController.logout);
 
-export default HandledRouter.getRouter();
+export default handledRouter.getRouter();

@@ -2,13 +2,23 @@ import { Types } from "mongoose";
 import profileModel, { Profile } from "../models/profile";
 
 class ProfileService {
-  async findByIdAndUpdateName(id: Types.ObjectId, name: string) {
+  async findByIdAndUpdateName(id: Types.ObjectId, name: string): Promise<void> {
     await profileModel.findByIdAndUpdate(id, { name: name });
   }
-  async findByIdAndUpdateAbout(id: Types.ObjectId, about: string) {
-    await profileModel.findByIdAndUpdate(id, { about: about });
+
+  async findByIdAndUpdateAbout(
+    id: Types.ObjectId,
+    about: string
+  ): Promise<Types.ObjectId[]> {
+    const profile = await profileModel.findByIdAndUpdate(id, { about: about });
+    if (profile) return profile.friends;
+    else throw new Error("Profile not found!");
   }
-  async findByIdAndUpdateImage(id: Types.ObjectId, image: string) {
+
+  async findByIdAndUpdateImage(
+    id: Types.ObjectId,
+    image: string
+  ): Promise<void> {
     await profileModel.findByIdAndUpdate(id, { image: image });
   }
 

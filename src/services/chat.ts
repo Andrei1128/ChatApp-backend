@@ -2,15 +2,33 @@ import { Types } from "mongoose";
 import chatModel, { Chat } from "../models/chat";
 
 class ChatService {
-  async findAndUpdateName(id: Types.ObjectId, name: string): Promise<void> {
-    await chatModel.findByIdAndUpdate(id, { name: name });
+  async findAndUpdateName(
+    id: Types.ObjectId,
+    name: string
+  ): Promise<Types.ObjectId[]> {
+    const chat = await chatModel.findByIdAndUpdate(id, { name: name });
+    if (chat) {
+      return chat.participants;
+    } else throw new Error("Chat not found!");
   }
 
-  async findAndUpdateAbout(id: Types.ObjectId, about: string): Promise<void> {
-    await chatModel.findByIdAndUpdate(id, { about: about });
+  async findAndUpdateAbout(
+    id: Types.ObjectId,
+    about: string
+  ): Promise<Types.ObjectId[]> {
+    const chat = await chatModel.findByIdAndUpdate(id, { about: about });
+    if (chat) {
+      return chat.participants;
+    } else throw new Error("Chat not found!");
   }
-  async findAndUpdateImage(id: Types.ObjectId, image: string): Promise<void> {
-    await chatModel.findByIdAndUpdate(id, { image: image });
+  async findAndUpdateImage(
+    id: Types.ObjectId,
+    image: string
+  ): Promise<Types.ObjectId[]> {
+    const chat = await chatModel.findByIdAndUpdate(id, { image: image });
+    if (chat) {
+      return chat.participants;
+    } else throw new Error("Chat not found!");
   }
 
   async getChat(id: string): Promise<Chat> {

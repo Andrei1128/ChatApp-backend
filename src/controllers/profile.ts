@@ -7,17 +7,20 @@ class ProfileController {
     await ProfileService.findByIdAndUpdateName(req.myProfileID, req.body.name);
     res.status(200).json("Succes!");
   }
+
   async updateAbout(req: Request, res: Response) {
-    await ProfileService.findByIdAndUpdateAbout(
-      req.myProfileID,
-      req.body.about
-    );
+    const id = req.myProfileID;
+    const about = req.body.about;
+    const friends = await ProfileService.findByIdAndUpdateAbout(id, about);
+    for (const friend of friends)
+      io.to(friend.toString()).emit("new friend about", { id, about });
     res.status(200).json("Succes!");
   }
+
   async updateImage(req: Request, res: Response) {
     await ProfileService.findByIdAndUpdateImage(
       req.myProfileID,
-      req.body.imageBuffer
+      req.body.image
     );
     res.status(200).json("Succes!");
   }
