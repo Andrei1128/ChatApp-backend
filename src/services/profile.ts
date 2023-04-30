@@ -101,7 +101,6 @@ class ProfileService {
       .findById(id)
       .populate("friends")
       .populate("requests")
-      .populate("chats")
       .populate({
         path: "chats",
         populate: {
@@ -115,6 +114,9 @@ class ProfileService {
           populate: {
             path: "from",
           },
+        },
+        options: {
+          sort: { updatedAt: 1 },
         },
       });
     if (profileFound) return profileFound;

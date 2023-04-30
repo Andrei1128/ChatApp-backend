@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import messageModel, { Message } from "../models/message";
 import { Profile } from "../models/profile";
 
-class MessageController {
+class MessageService {
   async createMessage(
     content: string,
     from?: Profile | Types.ObjectId
@@ -14,4 +14,4 @@ class MessageController {
   }
 }
 
-export default new MessageController();
+export default new MessageService();

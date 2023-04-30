@@ -16,15 +16,16 @@ io.use((socket: Socket, next) => {
 });
 
 io.on("connection", async (socket: Socket) => {
-  console.log(`${socket.handshake.auth.userID} connected..`);
-  io.emit("user connected", socket.handshake.auth.userID);
-  await profileModel.findByIdAndUpdate(socket.handshake.auth.userID, {
+  const userId = socket.handshake.auth.userID;
+  console.log(`${userId} connected..`);
+  io.emit("user connected", userId);
+  await profileModel.findByIdAndUpdate(userId, {
     online: true,
   });
   socket.on("disconnect", async () => {
-    console.log(`${socket.handshake.auth.userID} disconnected!`);
-    io.emit("user disconnected", socket.handshake.auth.userID);
-    await profileModel.findByIdAndUpdate(socket.handshake.auth.userID, {
+    console.log(`${userId} disconnected!`);
+    io.emit("user disconnected", userId);
+    await profileModel.findByIdAndUpdate(userId, {
       online: false,
     });
   });
@@ -34,9 +35,10 @@ io.on("connection", (socket: Socket) => {
   socket.on(
     "private message",
     async (message: Message, convId: Types.ObjectId | string) => {
+      const senderId = socket.handshake.auth.userID;
       await ChatService.verifyIfProfileIsInChat(
         convId as Types.ObjectId,
-        socket.handshake.auth.userID
+        senderId
       );
       const newMessage = await MessageService.createMessage(
         message.content,
@@ -47,14 +49,14 @@ io.on("connection", (socket: Socket) => {
       );
       const from = newMessage.from;
       for (const participant of participants) {
-        io.to(participant.toString()).emit("chat message", {
-          convId,
-          message: {
-            content: message.content,
-            from: { _id: from._id, name: from.name, image: from.image },
-            timestamp: Date.now(),
-          },
-        });
+        if (participant.toString() !== senderId)
+          io.to(participant.toString()).emit("chat message", {
+            convId,
+            message: {
+              content: message.content,
+              from: { _id: from._id, name: from.name, image: from.image },
+            },
+          });
       }
 
       await ChatService.AddMessage(convId as Types.ObjectId, newMessage._id);
