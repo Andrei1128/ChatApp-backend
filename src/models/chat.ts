@@ -1,11 +1,12 @@
 import { Types, model, Schema, Document } from "mongoose";
+import { Message } from "./message";
 
 export interface Chat extends Document {
   name: string;
   image: string;
   about: string;
   participants: Types.ObjectId[];
-  messages: Types.ObjectId[];
+  messages: Types.ObjectId[] | Message[];
 }
 
 const chatModel = model<Chat>(

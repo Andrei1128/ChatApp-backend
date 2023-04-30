@@ -34,16 +34,29 @@ io.on("connection", (socket: Socket) => {
   socket.on(
     "private message",
     async (message: Message, convId: Types.ObjectId | string) => {
+      await ChatService.verifyIfProfileIsInChat(
+        convId as Types.ObjectId,
+        socket.handshake.auth.userID
+      );
       const newMessage = await MessageService.createMessage(
         message.content,
-        message.from,
-        Date.now()
+        message.from
       );
-      io.emit(convId as string, {
-        content: message.content,
-        from: newMessage.from,
-        timestamp: Date.now(),
-      });
+      const participants = await ChatService.getChatParticipants(
+        convId as string
+      );
+      const from = newMessage.from;
+      for (const participant of participants) {
+        io.to(participant.toString()).emit("chat message", {
+          convId,
+          message: {
+            content: message.content,
+            from: { _id: from._id, name: from.name, image: from.image },
+            timestamp: Date.now(),
+          },
+        });
+      }
+
       await ChatService.AddMessage(convId as Types.ObjectId, newMessage._id);
     }
   );

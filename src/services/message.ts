@@ -1,15 +1,15 @@
-import messageModel, { Message } from "../models/message";
 import { Types } from "mongoose";
+import messageModel, { Message } from "../models/message";
+import { Profile } from "../models/profile";
 
 class MessageController {
   async createMessage(
     content: string,
-    from: Types.ObjectId,
-    timestamp: number
+    from?: Profile | Types.ObjectId
   ): Promise<Message> {
-    const newMessage = (
-      await messageModel.create({ content, from, timestamp })
-    ).populate("from");
+    const newMessage = (await messageModel.create({ content, from })).populate(
+      "from"
+    );
     return newMessage;
   }
 }

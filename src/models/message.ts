@@ -1,9 +1,10 @@
-import { Types, Document, Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
+import { Profile } from "./profile";
 
 export interface Message extends Document {
   content: string;
-  from: Types.ObjectId;
   timestamp: number;
+  from: Profile;
 }
 
 const message = model<Message>(
@@ -13,9 +14,8 @@ const message = model<Message>(
     from: {
       type: Schema.Types.ObjectId,
       ref: "profile",
-      required: true,
     },
-    timestamp: { type: Number },
+    timestamp: { type: Number, default: Date.now() },
   })
 );
 export default message;

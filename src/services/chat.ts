@@ -2,38 +2,45 @@ import { Types } from "mongoose";
 import chatModel, { Chat } from "../models/chat";
 
 class ChatService {
-  async findAndUpdateName(
-    id: Types.ObjectId,
-    name: string
-  ): Promise<Types.ObjectId[]> {
+  async verifyIfProfileIsInChat(
+    chatId: Types.ObjectId,
+    profileId: Types.ObjectId
+  ): Promise<void> {
+    const chatFound = await chatModel.findById(chatId);
+    if (chatFound) {
+      const participants = chatFound.participants;
+      for (const participant of participants) {
+        if (participant.toString() === profileId.toString()) {
+          return;
+        }
+      }
+      throw new Error("Profile not in chat participants!");
+    } else throw new Error("Chat not found!");
+  }
+
+  async findAndUpdateName(id: Types.ObjectId, name: string): Promise<Chat> {
     const chat = await chatModel.findByIdAndUpdate(id, { name: name });
     if (chat) {
-      return chat.participants;
+      return chat;
     } else throw new Error("Chat not found!");
   }
 
-  async findAndUpdateAbout(
-    id: Types.ObjectId,
-    about: string
-  ): Promise<Types.ObjectId[]> {
+  async findAndUpdateAbout(id: Types.ObjectId, about: string): Promise<Chat> {
     const chat = await chatModel.findByIdAndUpdate(id, { about: about });
     if (chat) {
-      return chat.participants;
+      return chat;
     } else throw new Error("Chat not found!");
   }
-  async findAndUpdateImage(
-    id: Types.ObjectId,
-    image: string
-  ): Promise<Types.ObjectId[]> {
+  async findAndUpdateImage(id: Types.ObjectId, image: string): Promise<Chat> {
     const chat = await chatModel.findByIdAndUpdate(id, { image: image });
     if (chat) {
-      return chat.participants;
+      return chat;
     } else throw new Error("Chat not found!");
   }
 
-  async getChat(id: string): Promise<Chat> {
-    const chatFound = await chatModel.findById(id).populate("participants");
-    if (chatFound) return chatFound;
+  async getChatParticipants(id: string): Promise<Types.ObjectId[]> {
+    const chatFound = await chatModel.findById(id);
+    if (chatFound) return chatFound.participants;
     else throw new Error("Chat not found!");
   }
 

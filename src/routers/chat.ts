@@ -16,7 +16,6 @@ handledRouter.patch(
 );
 handledRouter.patch("/updateAbout", ChatController.updateAbout);
 handledRouter.post("/chat", updateNameValidator, ChatController.createChat);
-handledRouter.get("/:id", ChatController.findChat);
 handledRouter.delete("/delete/:id", ChatController.deleteChat);
 
 export default handledRouter.getRouter();
