@@ -22,6 +22,7 @@ io.on("connection", async (socket: Socket) => {
   await profileModel.findByIdAndUpdate(userId, {
     online: true,
   });
+
   socket.on("disconnect", async () => {
     console.log(`${userId} disconnected!`);
     io.emit("user disconnected", userId);
@@ -29,16 +30,13 @@ io.on("connection", async (socket: Socket) => {
       online: false,
     });
   });
-});
 
-io.on("connection", (socket: Socket) => {
-  const senderId = socket.handshake.auth.userID;
   socket.on(
     "private message",
     async (message: Message, convId: Types.ObjectId | string) => {
       await ChatService.verifyIfProfileIsInChat(
         convId as Types.ObjectId,
-        senderId
+        userId
       );
       const newMessage = await MessageService.createMessage(
         message.content,
@@ -49,7 +47,7 @@ io.on("connection", (socket: Socket) => {
       );
       const from = newMessage.from;
       for (const participant of participants) {
-        if (participant.toString() !== senderId)
+        if (participant.toString() !== userId)
           io.to(participant.toString()).emit("chat message", {
             convId,
             message: {
@@ -62,8 +60,39 @@ io.on("connection", (socket: Socket) => {
       await ChatService.AddMessage(convId as Types.ObjectId, newMessage._id);
     }
   );
+
+  socket.on("video call", async (convId: Types.ObjectId) => {
+    await ChatService.verifyIfProfileIsInChat(convId, userId);
+    const participants = await ChatService.getChatParticipants(
+      convId.toString()
+    );
+    for (const participant of participants) {
+      if (participant._id.toString() !== userId)
+        io.to(participant.toString()).emit("incoming video call", convId);
+    }
+    const newMessage = await MessageService.createMessage(
+      "Started a video call"
+    );
+    await ChatService.AddMessage(convId, newMessage._id);
+  });
+
+  socket.on("audio call", async (convId: Types.ObjectId) => {
+    await ChatService.verifyIfProfileIsInChat(convId, userId);
+    const participants = await ChatService.getChatParticipants(
+      convId.toString()
+    );
+    for (const participant of participants) {
+      if (participant._id.toString() !== userId)
+        io.to(participant.toString()).emit("incoming audio call", convId);
+    }
+    const newMessage = await MessageService.createMessage(
+      "Started a audio call"
+    );
+    await ChatService.AddMessage(convId, newMessage._id);
+  });
+
   socket.on("clear notifications", async (convId: Types.ObjectId) => {
-    await ChatService.verifyIfProfileIsInChat(convId, senderId);
+    await ChatService.verifyIfProfileIsInChat(convId, userId);
     await ChatService.clearNotifications(convId);
   });
 });
