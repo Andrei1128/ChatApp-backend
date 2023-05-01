@@ -68,7 +68,7 @@ class ChatController {
     }
     const name: string = req.body.name;
     let chatFound;
-    if (name === null && participants.length === 2)
+    if (!name && participants.length === 2)
       chatFound = await ChatService.findChat(participants);
     if (chatFound) {
       res.json(chatFound._id);
@@ -77,20 +77,18 @@ class ChatController {
       if (name) {
         newChat = await ChatService.createGroup(participants, name);
       } else newChat = await ChatService.createChat(participants);
-      ProfileService.addChat(participants, newChat._id);
+
       let messageContent;
       let newMessage;
       if (name) {
         messageContent = `New group created`;
         newMessage = await MessageService.createMessage(messageContent);
-        await ChatService.AddMessage(newChat._id, newMessage._id);
       } else {
         messageContent = "Hey! 👋";
         newMessage = await MessageService.createMessage(
           messageContent,
           req.myProfileID
         );
-        await ChatService.AddMessage(newChat._id, newMessage._id);
       }
       (newChat.messages as Message[]).push(newMessage);
       for (const participant of participants) {
@@ -99,6 +97,8 @@ class ChatController {
       }
 
       res.json(newChat);
+      await ProfileService.addChat(participants, newChat._id);
+      await ChatService.AddMessage(newChat._id, newMessage._id);
     }
   }
 

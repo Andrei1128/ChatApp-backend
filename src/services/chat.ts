@@ -2,6 +2,13 @@ import { Types } from "mongoose";
 import chatModel, { Chat } from "../models/chat";
 
 class ChatService {
+  async clearNotifications(convId: Types.ObjectId): Promise<void> {
+    await chatModel.findByIdAndUpdate(
+      convId,
+      { notifications: 0 },
+      { timestamps: false }
+    );
+  }
   async verifyIfProfileIsInChat(
     chatId: Types.ObjectId,
     profileId: Types.ObjectId
@@ -69,7 +76,10 @@ class ChatService {
   }
 
   async AddMessage(id: Types.ObjectId, message: Types.ObjectId): Promise<void> {
-    await chatModel.findByIdAndUpdate(id, { $push: { messages: message } });
+    await chatModel.findByIdAndUpdate(id, {
+      $push: { messages: message },
+      $inc: { notifications: 1 },
+    });
   }
 
   async deleteChat(id: string): Promise<void> {

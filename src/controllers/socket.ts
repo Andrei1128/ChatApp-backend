@@ -32,10 +32,10 @@ io.on("connection", async (socket: Socket) => {
 });
 
 io.on("connection", (socket: Socket) => {
+  const senderId = socket.handshake.auth.userID;
   socket.on(
     "private message",
     async (message: Message, convId: Types.ObjectId | string) => {
-      const senderId = socket.handshake.auth.userID;
       await ChatService.verifyIfProfileIsInChat(
         convId as Types.ObjectId,
         senderId
@@ -62,4 +62,8 @@ io.on("connection", (socket: Socket) => {
       await ChatService.AddMessage(convId as Types.ObjectId, newMessage._id);
     }
   );
+  socket.on("clear notifications", async (convId: Types.ObjectId) => {
+    await ChatService.verifyIfProfileIsInChat(convId, senderId);
+    await ChatService.clearNotifications(convId);
+  });
 });
