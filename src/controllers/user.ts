@@ -29,7 +29,7 @@ class UserController {
         parseInt(process.env.SALT_ROUND as string)
       );
       const hash = bcrypt.hashSync(req.body.password, salt);
-      const newProfile = await ProfileService.createProfile(req.body.username);
+      const newProfile = await ProfileService.createProfile(req.body.name);
       const newUser = await UserService.createUser({
         ...req.body,
         password: hash,

@@ -7,7 +7,7 @@ export interface Token extends Document {
 const token = model<Token>(
   "token",
   new Schema<Token>({
-    content: { type: String, required: true, unique: true },
+    content: { type: String },
   })
 );
 
