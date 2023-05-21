@@ -1,13 +1,23 @@
 import { Types } from "mongoose";
-import chatModel, { Chat } from "../models/chat";
+import chatModel, { Chat, UserUtil } from "../models/chat";
 
 class ChatService {
-  async clearNotifications(convId: Types.ObjectId): Promise<void> {
-    await chatModel.findByIdAndUpdate(
-      convId,
-      { notifications: 0 },
-      { timestamps: false }
-    );
+  async clearNotifications(
+    convId: Types.ObjectId,
+    userId: Types.ObjectId
+  ): Promise<void> {
+    const chatFound = await chatModel.findById(convId);
+    if (chatFound) {
+      chatFound.userUtil = chatFound.userUtil.map((u) => {
+        if (u.userId === userId.toString()) u.notifications = 0;
+        return u;
+      });
+      await chatModel.findByIdAndUpdate(
+        convId,
+        { userUtil: chatFound.userUtil },
+        { timestamps: false }
+      );
+    } else throw new Error("Chat not found!");
   }
   async verifyIfProfileIsInChat(
     chatId: Types.ObjectId,
@@ -52,18 +62,34 @@ class ChatService {
   }
 
   async createChat(participants: Types.ObjectId[]): Promise<Chat> {
-    const newChat = (await chatModel.create({ participants })).populate(
-      "participants"
-    );
+    const userUtil: UserUtil[] = [];
+    for (const participant of participants) {
+      userUtil.push({
+        userId: participant.toString(),
+        deletedAt: Date.now(),
+        notifications: 0,
+      });
+    }
+    const newChat = (
+      await chatModel.create({ participants, userUtil })
+    ).populate("participants");
     return newChat;
   }
   async createGroup(
     participants: Types.ObjectId[],
     name: string
   ): Promise<Chat> {
-    const newChat = (await chatModel.create({ participants, name })).populate(
-      "participants"
-    );
+    const userUtil: UserUtil[] = [];
+    for (const participant of participants) {
+      userUtil.push({
+        userId: participant.toString(),
+        deletedAt: Date.now(),
+        notifications: 0,
+      });
+    }
+    const newChat = (
+      await chatModel.create({ participants, name, userUtil })
+    ).populate("participants");
     return newChat;
   }
 
@@ -75,11 +101,23 @@ class ChatService {
     else return undefined;
   }
 
-  async AddMessage(id: Types.ObjectId, message: Types.ObjectId): Promise<void> {
-    await chatModel.findByIdAndUpdate(id, {
-      $push: { messages: message },
-      $inc: { notifications: 1 },
-    });
+  async AddMessage(
+    id: Types.ObjectId,
+    message: Types.ObjectId,
+    userId: Types.ObjectId
+  ): Promise<void> {
+    const chatFound = await chatModel.findById(id);
+    if (chatFound) {
+      chatFound.userUtil = chatFound.userUtil.map((u) => {
+        if (u.userId !== userId.toString())
+          u.notifications = u.notifications + 1;
+        return u;
+      });
+      await chatModel.findByIdAndUpdate(id, {
+        $push: { messages: message },
+        userUtil: chatFound.userUtil,
+      });
+    } else throw new Error("Chat not found!");
   }
 
   async deleteChat(id: string): Promise<void> {

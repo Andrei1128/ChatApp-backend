@@ -57,7 +57,11 @@ io.on("connection", async (socket: Socket) => {
           });
       }
 
-      await ChatService.AddMessage(convId as Types.ObjectId, newMessage._id);
+      await ChatService.AddMessage(
+        convId as Types.ObjectId,
+        newMessage._id,
+        userId
+      );
     }
   );
 
@@ -73,7 +77,7 @@ io.on("connection", async (socket: Socket) => {
     const newMessage = await MessageService.createMessage(
       "Started a video call"
     );
-    await ChatService.AddMessage(convId, newMessage._id);
+    await ChatService.AddMessage(convId, newMessage._id, userId);
   });
 
   socket.on("audio call", async (convId: Types.ObjectId) => {
@@ -88,11 +92,11 @@ io.on("connection", async (socket: Socket) => {
     const newMessage = await MessageService.createMessage(
       "Started a audio call"
     );
-    await ChatService.AddMessage(convId, newMessage._id);
+    await ChatService.AddMessage(convId, newMessage._id, userId);
   });
 
   socket.on("clear notifications", async (convId: Types.ObjectId) => {
     await ChatService.verifyIfProfileIsInChat(convId, userId);
-    await ChatService.clearNotifications(convId);
+    await ChatService.clearNotifications(convId, userId);
   });
 });

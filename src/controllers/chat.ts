@@ -22,7 +22,7 @@ class ChatController {
     res.status(200).json("Succes!");
 
     const newMessage = await MessageService.createMessage(messageContent);
-    await ChatService.AddMessage(chat._id, newMessage._id);
+    await ChatService.AddMessage(chat._id, newMessage._id, req.myProfileID);
   }
   async updateName(req: Request, res: Response) {
     const chatId = req.body.id;
@@ -38,7 +38,7 @@ class ChatController {
     }
     res.status(200).json("Succes!");
     const newMessage = await MessageService.createMessage(messageContent);
-    await ChatService.AddMessage(chat._id, newMessage._id);
+    await ChatService.AddMessage(chat._id, newMessage._id, req.myProfileID);
   }
   async updateAbout(req: Request, res: Response) {
     const chatId = req.body.id;
@@ -54,7 +54,7 @@ class ChatController {
     }
     res.status(200).json("Succes!");
     const newMessage = await MessageService.createMessage(messageContent);
-    await ChatService.AddMessage(chat._id, newMessage._id);
+    await ChatService.AddMessage(chat._id, newMessage._id, req.myProfileID);
   }
   async createChat(req: Request, res: Response) {
     const participants: Types.ObjectId[] = req.body.participants;
@@ -98,7 +98,11 @@ class ChatController {
 
       res.json(newChat);
       await ProfileService.addChat(participants, newChat._id);
-      await ChatService.AddMessage(newChat._id, newMessage._id);
+      await ChatService.AddMessage(
+        newChat._id,
+        newMessage._id,
+        req.myProfileID
+      );
     }
   }
 
