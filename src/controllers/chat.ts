@@ -107,7 +107,7 @@ class ChatController {
   }
 
   async deleteChat(req: Request, res: Response) {
-    await ChatService.deleteChat(req.params.id);
+    await ChatService.deleteChat(req.params.id, req.myProfileID);
     res.status(200).json("Succes!");
   }
 }

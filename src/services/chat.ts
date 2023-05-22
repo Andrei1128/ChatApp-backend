@@ -66,7 +66,7 @@ class ChatService {
     for (const participant of participants) {
       userUtil.push({
         userId: participant.toString(),
-        deletedAt: Date.now(),
+        deletedAt: new Date(),
         notifications: 0,
       });
     }
@@ -83,7 +83,7 @@ class ChatService {
     for (const participant of participants) {
       userUtil.push({
         userId: participant.toString(),
-        deletedAt: Date.now(),
+        deletedAt: new Date(),
         notifications: 0,
       });
     }
@@ -120,8 +120,17 @@ class ChatService {
     } else throw new Error("Chat not found!");
   }
 
-  async deleteChat(id: string): Promise<void> {
-    await chatModel.findByIdAndDelete(id);
+  async deleteChat(id: string, userId: Types.ObjectId): Promise<void> {
+    const chatFound = await chatModel.findById(id);
+    if (chatFound) {
+      chatFound.userUtil = chatFound.userUtil.map((u) => {
+        if (u.userId === userId.toString()) u.deletedAt = new Date();
+        return u;
+      });
+      await chatModel.findByIdAndUpdate(id, {
+        userUtil: chatFound.userUtil,
+      });
+    } else throw new Error("Chat not found!");
   }
 }
 

@@ -8,6 +8,7 @@ export interface Profile extends Document {
   friends: Types.ObjectId[];
   chats: Types.ObjectId[];
   requests: Types.ObjectId[];
+  projects: Types.ObjectId[];
 }
 
 const profile = model<Profile>(
@@ -20,6 +21,7 @@ const profile = model<Profile>(
     friends: [{ type: Schema.Types.ObjectId, ref: "profile" }],
     chats: [{ type: Schema.Types.ObjectId, ref: "chat" }],
     requests: [{ type: Schema.Types.ObjectId, ref: "profile" }],
+    projects: [{ type: Schema.Types.ObjectId, ref: "project" }],
   })
 );
 export default profile;

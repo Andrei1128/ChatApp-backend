@@ -3,7 +3,7 @@ import { Message } from "./message";
 
 export interface UserUtil {
   userId: string;
-  deletedAt: number;
+  deletedAt: Date;
   notifications: number;
 }
 
@@ -34,7 +34,7 @@ const chatModel = model<Chat>(
       userUtil: [
         {
           userId: { type: String, required: true },
-          deletedAt: { type: Date },
+          deletedAt: { type: Date, default: new Date() },
           notifications: { type: Number, default: 0 },
         },
       ],
