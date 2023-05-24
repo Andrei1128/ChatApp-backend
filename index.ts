@@ -28,6 +28,7 @@ import authGuard from "./src//middlewares/authGuard";
 import profileRouter from "./src/routers/profile";
 import chatRouter from "./src/routers/chat";
 import projectRouter from "./src/routers/project";
+import GPTRouter from "./src/routers/GPT";
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,6 +37,7 @@ app.use("/auth", authRouter);
 app.use("/profile", authGuard, profileRouter);
 app.use("/chat", authGuard, chatRouter);
 app.use("/project", authGuard, projectRouter);
+app.use("/GPT", GPTRouter);
 
 mongoose.connection.once("open", () => {
   console.log("Connected to MongoDB");
