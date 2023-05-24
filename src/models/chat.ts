@@ -27,13 +27,12 @@ const chatModel = model<Chat>(
         {
           type: Schema.Types.ObjectId,
           ref: "profile",
-          required: true,
         },
       ],
       messages: [{ type: Schema.Types.ObjectId, ref: "message" }],
       userUtil: [
         {
-          userId: { type: String, required: true },
+          userId: { type: String },
           deletedAt: { type: Date, default: new Date() },
           notifications: { type: Number, default: 0 },
         },

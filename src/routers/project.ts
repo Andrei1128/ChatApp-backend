@@ -10,4 +10,8 @@ handledRouter.post(
   ProjectController.createProject
 );
 
+handledRouter.post("/createCode", ProjectController.createCode);
+handledRouter.post("/join", ProjectController.joinProject);
+handledRouter.post("/addChat", ProjectController.addChat);
+
 export default handledRouter.getRouter();

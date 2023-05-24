@@ -26,6 +26,7 @@ class ChatService {
     const chatFound = await chatModel.findById(chatId);
     if (chatFound) {
       const participants = chatFound.participants;
+      if (participants.length == 0) return;
       for (const participant of participants) {
         if (participant.toString() === profileId.toString()) {
           return;
@@ -90,6 +91,11 @@ class ChatService {
     const newChat = (
       await chatModel.create({ participants, name, userUtil })
     ).populate("participants");
+    return newChat;
+  }
+
+  async createProjChat(name: string): Promise<Chat> {
+    const newChat = await chatModel.create({ name });
     return newChat;
   }
 

@@ -6,6 +6,7 @@ export interface Project extends Document {
   image: string;
   adminId: string;
   participants: Types.ObjectId[];
+  chats: Types.ObjectId[];
 }
 
 const project = model<Project>(
@@ -15,6 +16,7 @@ const project = model<Project>(
     info: { type: String },
     image: { type: String },
     adminId: { type: String, required: true },
+    chats: [{ type: Schema.Types.ObjectId, ref: "chat" }],
     participants: [
       {
         type: Schema.Types.ObjectId,

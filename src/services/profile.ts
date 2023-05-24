@@ -112,7 +112,18 @@ class ProfileService {
       .findById(id)
       .populate("friends")
       .populate("requests")
-      .populate("projects")
+      .populate({
+        path: "projects",
+        populate: {
+          path: "chats",
+          populate: {
+            path: "messages",
+            populate: {
+              path: "from",
+            },
+          },
+        },
+      })
       .populate({
         path: "chats",
         populate: {
@@ -170,6 +181,14 @@ class ProfileService {
   async getProfileByName(name: string): Promise<Profile[]> {
     return await profileModel.find({
       name: { $regex: name, $options: "i" },
+    });
+  }
+  async joinProject(
+    projId: Types.ObjectId,
+    myId: Types.ObjectId
+  ): Promise<void> {
+    await profileModel.findByIdAndUpdate(myId, {
+      $push: { projects: projId },
     });
   }
 }
