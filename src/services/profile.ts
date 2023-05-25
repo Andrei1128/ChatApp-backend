@@ -115,6 +115,12 @@ class ProfileService {
       .populate({
         path: "projects",
         populate: {
+          path: "polls",
+        },
+      })
+      .populate({
+        path: "projects",
+        populate: {
           path: "chats",
           populate: {
             path: "messages",

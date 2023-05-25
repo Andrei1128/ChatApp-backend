@@ -4,6 +4,7 @@ import ProjectService from "../services/project";
 import ProfileService from "../services/profile";
 import ChatService from "../services/chat";
 import shortid from "shortid";
+import { pollModel } from "../models/project";
 
 class ProjectController {
   async createProject(req: Request, res: Response) {
@@ -45,6 +46,39 @@ class ProjectController {
     const chat = await ChatService.createProjChat(req.body.name);
     await ProjectService.addChat(chat._id, req.body.projId);
     res.json(chat);
+  }
+  async addPoll(req: Request, res: Response) {
+    const poll = await ProjectService.createPoll(
+      req.body.name,
+      req.body.fields
+    );
+    await ProjectService.addPoll(poll._id, req.body.projId);
+    res.json(poll);
+  }
+
+  async vote(req: Request, res: Response) {
+    const pollFound = await pollModel.findById(req.body.pollId);
+    let alreadyVoted = false;
+    if (pollFound) {
+      const myId = req.myProfileID.toString();
+      for (const field of pollFound.fields) {
+        field.votes.forEach((v) => {
+          if (v.toString() === myId) {
+            alreadyVoted = true;
+          }
+        });
+      }
+      if (!alreadyVoted) {
+        pollFound.fields = pollFound.fields.map((f) => {
+          if (f.name === req.body.field) f.votes.push(req.myProfileID);
+          return f;
+        });
+        await pollModel.updateOne({ _id: pollFound._id }, pollFound);
+        res.status(200).json("Success");
+      } else res.status(402).json("You already voted!");
+    } else {
+      res.status(400).json("Poll not found!");
+    }
   }
 }
 

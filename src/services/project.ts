@@ -1,5 +1,10 @@
 import { Types } from "mongoose";
-import projectModel, { Project } from "../models/project";
+import projectModel, {
+  Field,
+  Poll,
+  Project,
+  pollModel,
+} from "../models/project";
 import projectCode from "../models/projectCode";
 
 class ProjectService {
@@ -47,10 +52,23 @@ class ProjectService {
   }
 
   async addChat(chat: Types.ObjectId, projId: Types.ObjectId): Promise<void> {
-    const proj = await projectModel.findByIdAndUpdate(projId, {
+    await projectModel.findByIdAndUpdate(projId, {
       $push: { chats: chat },
     });
-    console.log(proj);
+  }
+  async addPoll(poll: Types.ObjectId, projId: Types.ObjectId): Promise<void> {
+    await projectModel.findByIdAndUpdate(projId, {
+      $push: { polls: poll },
+    });
+  }
+
+  async createPoll(name: string, fields: string[]): Promise<Poll> {
+    const _fields: Field[] = [];
+    for (const field of fields) {
+      _fields.push({ name: field, votes: [] });
+    }
+    const pollCreated = await pollModel.create({ name: name, fields: _fields });
+    return pollCreated;
   }
 }
 
