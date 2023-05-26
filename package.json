@@ -26,6 +26,7 @@
     "jsonwebtoken": "^9.0.0",
     "mime-types": "^2.1.35",
     "mongoose": "^7.0.2",
+    "nodemailer": "^6.9.2",
     "nodemon": "^2.0.21",
     "openai": "^3.2.1",
     "shortid": "^2.2.16",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@types/mime-types": "^2.1.1",
     "@types/node": "^18.15.11",
+    "@types/nodemailer": "^6.4.8",
     "@types/shortid": "^0.0.29",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",

@@ -4,6 +4,7 @@ export interface User extends Document {
   email: string;
   password: string;
   profile: Types.ObjectId;
+  validated: boolean;
 }
 
 const userModel = model<User>(
@@ -17,6 +18,7 @@ const userModel = model<User>(
       required: true,
       unique: true,
     },
+    validated: { type: Boolean, default: false },
   })
 );
 export default userModel;

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import userModel, { User } from "../models/user";
 
 class UserService {
@@ -13,6 +14,9 @@ class UserService {
     const userFound = await userModel.findOne({ name }).populate("profile");
     if (userFound) return userFound;
     else return null;
+  }
+  async verify(id: Types.ObjectId): Promise<void> {
+    await userModel.findByIdAndUpdate(id, { validated: true });
   }
 }
 

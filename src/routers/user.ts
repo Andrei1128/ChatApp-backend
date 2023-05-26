@@ -5,6 +5,7 @@ import HandledRouter from "../utilities/HandledRouter";
 const handledRouter = new HandledRouter();
 
 handledRouter.post("/login", UserController.login);
+handledRouter.get("/verify/:token", UserController.verify);
 handledRouter.post("/register", registerValidator, UserController.register);
 handledRouter.delete("/logout", UserController.logout);
 

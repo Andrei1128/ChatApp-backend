@@ -4,23 +4,40 @@ import TokenService from "../services/token";
 import ProfileService from "../services/profile";
 import UserService from "../services/user";
 import { Request, Response } from "express";
+import sendEmail from "../utilities/mailSender";
+import { Types } from "mongoose";
 
 class UserController {
   async login(req: Request, res: Response) {
     const userFound = await UserService.findUserByEmail(req.body.email);
     if (userFound != null) {
-      if (bcrypt.compareSync(req.body.password, userFound.password)) {
-        const token = jwt.sign(
-          { myProfileID: userFound.profile._id },
-          process.env.JWT_SECRET as string,
-          {
-            expiresIn: process.env.JWT_EXPIRE,
-          }
-        );
-        await TokenService.createToken(token);
-        res.json(token);
-      } else res.status(400).json("Wrong password!");
+      if (userFound.validated) {
+        if (bcrypt.compareSync(req.body.password, userFound.password)) {
+          const token = jwt.sign(
+            { myProfileID: userFound.profile._id },
+            process.env.JWT_SECRET as string,
+            {
+              expiresIn: process.env.JWT_EXPIRE,
+            }
+          );
+          await TokenService.createToken(token);
+          res.json(token);
+        } else res.status(400).json("Wrong password!");
+      } else res.status(400).json("User is not validated!");
     } else res.status(400).json("Invalid email!");
+  }
+  async verify(req: Request, res: Response) {
+    const token = req.params.token;
+    try {
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      ) as jwt.JwtPayload;
+      await UserService.verify(decoded.userId as Types.ObjectId);
+      res.redirect("http://localhost:4200");
+    } catch (e) {
+      res.status(401).json("Invalid token!");
+    }
   }
 
   async register(req: Request, res: Response) {
@@ -35,15 +52,24 @@ class UserController {
         password: hash,
         profile: newProfile,
       });
-      const token = jwt.sign(
-        { myProfileID: newUser.profile._id },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: process.env.JWT_EXPIRE,
-        }
+
+      const verificationToken = jwt.sign(
+        { userId: newUser._id },
+        process.env.JWT_SECRET as string
       );
-      await TokenService.createToken(token);
-      res.json(token);
+
+      const verificationLink = `http://localhost:3000/auth/verify/${verificationToken}`;
+      const emailSubject = "Account Verification";
+      const emailText = `Click on the following link to verify your account: ${verificationLink}`;
+
+      try {
+        await sendEmail(req.body.email, emailSubject, emailText);
+        res.json(
+          "Registration successful. Please check your email for verification."
+        );
+      } catch (error) {
+        res.status(500).json("Error sending verification email.");
+      }
     } else {
       res.status(400).json("Email already used!");
     }
