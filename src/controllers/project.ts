@@ -4,7 +4,7 @@ import ProjectService from "../services/project";
 import ProfileService from "../services/profile";
 import ChatService from "../services/chat";
 import shortid from "shortid";
-import { pollModel } from "../models/project";
+import { Endline, deadlineModel, pollModel } from "../models/project";
 
 class ProjectController {
   async createProject(req: Request, res: Response) {
@@ -54,6 +54,29 @@ class ProjectController {
     );
     await ProjectService.addPoll(poll._id, req.body.projId);
     res.json(poll);
+  }
+  async addDeadline(req: Request, res: Response) {
+    const deadline = await ProjectService.createDeadline(req.body.name);
+    await ProjectService.addDeadline(deadline._id, req.body.projId);
+    res.json(deadline);
+  }
+  async addEndline(req: Request, res: Response) {
+    const endline: Endline = {
+      name: req.body.name,
+      date: req.body.date,
+    };
+    await deadlineModel.findByIdAndUpdate(req.body.id, {
+      $push: { endlines: endline },
+    });
+    res.json(endline);
+  }
+  async deleteEndline(req: Request, res: Response) {
+    const id = req.params.id;
+    await deadlineModel.findOneAndUpdate(
+      {},
+      { $pull: { endlines: { _id: id } } }
+    );
+    res.status(200).json("Success!");
   }
 
   async vote(req: Request, res: Response) {

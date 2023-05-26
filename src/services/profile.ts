@@ -121,6 +121,12 @@ class ProfileService {
       .populate({
         path: "projects",
         populate: {
+          path: "deadlines",
+        },
+      })
+      .populate({
+        path: "projects",
+        populate: {
           path: "chats",
           populate: {
             path: "messages",

@@ -18,6 +18,29 @@ export const pollModel = model<Poll>(
   })
 );
 
+export interface Deadline extends Document {
+  name: string;
+  endlines: Endline[];
+}
+
+export const deadlineModel = model<Deadline>(
+  "deadline",
+  new Schema<Deadline>({
+    name: { type: String, required: true },
+    endlines: [
+      {
+        name: { type: String },
+        date: { type: Date },
+      },
+    ],
+  })
+);
+
+export interface Endline {
+  name: string;
+  date: Date;
+}
+
 export interface Field {
   name: string;
   votes: Types.ObjectId[];
@@ -31,6 +54,7 @@ export interface Project extends Document {
   participants: Types.ObjectId[];
   chats: Types.ObjectId[];
   polls: Poll[];
+  deadlines: Deadline[];
 }
 
 const project = model<Project>(
@@ -49,6 +73,7 @@ const project = model<Project>(
       },
     ],
     polls: [{ type: Schema.Types.ObjectId, ref: "poll" }],
+    deadlines: [{ type: Schema.Types.ObjectId, ref: "deadline" }],
   })
 );
 export default project;

@@ -1,8 +1,10 @@
 import { Types } from "mongoose";
 import projectModel, {
+  Deadline,
   Field,
   Poll,
   Project,
+  deadlineModel,
   pollModel,
 } from "../models/project";
 import projectCode from "../models/projectCode";
@@ -61,6 +63,14 @@ class ProjectService {
       $push: { polls: poll },
     });
   }
+  async addDeadline(
+    deadline: Types.ObjectId,
+    projId: Types.ObjectId
+  ): Promise<void> {
+    await projectModel.findByIdAndUpdate(projId, {
+      $push: { deadlines: deadline },
+    });
+  }
 
   async createPoll(name: string, fields: string[]): Promise<Poll> {
     const _fields: Field[] = [];
@@ -69,6 +79,11 @@ class ProjectService {
     }
     const pollCreated = await pollModel.create({ name: name, fields: _fields });
     return pollCreated;
+  }
+
+  async createDeadline(name: string): Promise<Deadline> {
+    const deadlineCreated = await deadlineModel.create({ name: name });
+    return deadlineCreated;
   }
 }
 
